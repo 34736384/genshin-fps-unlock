@@ -12,6 +12,7 @@
  - Not required but I know it works on this version
  ## Usage
  - Place the compiled exe into one directory above the game (same folder as launcher.exe)
+ - If your 'Genshin Impact Game' folder is not present in the same folder as launcher.exe, just place the exe to one directory above the game folder
  - Make sure your game is closed, the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
@@ -27,32 +28,32 @@
  - [Here](http://cherrytree.at/misc/vk.htm) is a list of keycodes
 
 
-# ԭ�����FPS����
+# 原神解锁FPS限制
 
- - ����ԭ���������ⲿ������ͨ��**WriteProcessMemory**��FPS��ֵд����Ϸ
- - ����Ҫͨ���������ж�д����
- - ֧�ֹ��������
- - ������֧�ֺ����汾������Ҫ����Դ��
- - �����Ҫ�����һᾡ�����
+ - 工作原理类似于外部辅助，通过**WriteProcessMemory**把FPS数值写进游戏
+ - 不需要通过驱动进行读写操作
+ - 支持国服和外服
+ - 理论上支持后续版本，不需要更新源码
+ - 如果需要更新我会尽快更新
 
-## ����
+## 编译
 
- - ��VS2019���룬�����汾��ҲӦ�ÿ��ԣ�û���Թ�
-## ʳ��ָ��
- - �ѽ������ŵ���Ϸִ���ļ�����һ��Ŀ¼ ����������launcher.exeͬһ��Ŀ¼��
- - ����֮ǰȷ����Ϸ�ǹرյ�
- - �ù���Ա���н�����
- - ���������ܹص�
->ʹ�ù���Ա��������Ϊ��Ϸ�����ɽ�������������Ϸ��������Ҫ����ԱȨ���ˣ����Ը���������Ҳ����Ҫ��
-### Ĭ���ȼ�
-- **END** ��/��
-- **�Ϸ����** ����FPS���� ��+20��
-- **�·����** ����FPS���� ��-20��
-- Դ��Ĭ�ϵ�FPS��ֵ��120
+ - 用VS2019编译，其他版本的也应该可以，没测试过
+## 食用指南
+ - 把解锁器放到游戏执行文件的上一个目录 （和启动器launcher.exe同一个目录）
+ - 运行之前确保游戏是关闭的
+ - 用管理员运行解锁器
+ - 解锁器不能关掉
+>使用管理员运行是因为游戏必须由解锁器启动，游戏本身就需要管理员权限了，所以负责启动的也是需要的
+### 默认热键
+- **END** 开/关
+- **上方向键** 增大FPS上限 （+20）
+- **下方向键** 减少FPS上限 （-20）
+- 源里默认的FPS数值是120
 
-## ע��
-- �Ѿ����º��ϲ����������ڣ�Ŀǰ��û���κ��쳣��ð�յȼ�30
-- ʹ��δ��֤�ĵ����������޸���Ϸ������Υ����Э������ģ�����Ը�
-- ��Ҫ�����ȼ��Ļ����޸���Դ�￪ͷ�Ķ��� ��[�ȼ���](http://cherrytree.at/misc/vk.htm)��
-- Ҫת�صĻ���㣬�Ͼ���Դ�����ԵĻ���ע���³���
-- ��ô���ƹ����벻Ҫ��ȥ����
+## 注意
+- 已经在新号上测试了两星期，目前并没有任何异常，冒险等级30
+- 使用未认证的第三方软件修改游戏数据是违反了协议条款的，后果自负
+- 想要更改热键的话，修改下源里开头的定义 （[热键码](http://cherrytree.at/misc/vk.htm)）
+- 要转载的话随便，毕竟开源，可以的话就注明下出处
+- 这么个破工具请不要拿去倒卖
