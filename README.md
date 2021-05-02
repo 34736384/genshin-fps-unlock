@@ -12,7 +12,7 @@
  - Not required but I know it works on this version
  ## Usage
  - Place the compiled exe into one directory above the game (same folder as launcher.exe)
- - If your 'Genshin Impact Game' folder is not present in the same folder as launcher.exe, just place the exe to one directory above the game folder
+ - If your 'Genshin Impact Game' folder is not present in the same folder as launcher.exe, just place the exe to one directory above the game folder (e.g. Your game is placed at 'D:\Games\Genshin Impact Game\GenshinImpact.exe', then you would want to have the unlocker in 'C:\Games\unlockfps.exe')
  - Make sure your game is closed, the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
@@ -26,6 +26,7 @@
  - Modifying game memory with an unauthorized third party application is a violation of the ToS, so use it at your own risk
  - If you want to change keybinds or the default fps then you can edit the defines at the top of the source
  - [Here](http://cherrytree.at/misc/vk.htm) is a list of keycodes
+ - The reason that I didn't made it to be place in the same folder of the game exe is because the game will attempt to verify the files before logging on, and it will treat the unlocker as a game file too which will fail the file integrity check. Producing an 31-4302 error.
 
 
 # 原神解锁FPS限制
@@ -41,6 +42,7 @@
  - 用VS2019编译，其他版本的也应该可以，没测试过
 ## 食用指南
  - 把解锁器放到游戏执行文件的上一个目录 （和启动器launcher.exe同一个目录）
+ - 如果你的游戏不是安装在和launcher.exe同一个目录下的话，把解锁器放到游戏的上一个目录就行（如果游戏是在 'D:\Games\Genshin Impact Game\YuanShen.exe'， 解锁器就放在 'D:\Games\unlockfps.exe'）
  - 运行之前确保游戏是关闭的
  - 用管理员运行解锁器
  - 解锁器不能关掉
@@ -55,5 +57,6 @@
 - 已经在新号上测试了两星期，目前并没有任何异常，冒险等级30
 - 使用未认证的第三方软件修改游戏数据是违反了协议条款的，后果自负
 - 想要更改热键的话，修改下源里开头的定义 （[热键码](http://cherrytree.at/misc/vk.htm)）
+- 至于为啥我没写成能在和游戏同一个目录下运行是因为游戏登录的时候会进行文件完整性检测，如果游戏目录内有其他文件也会当做是游戏的文件进行检测。如果把解锁器和游戏放一起的话游戏会把解锁器当成游戏文件检测，从而导致报错（31-4302）
 - 要转载的话随便，毕竟开源，可以的话就注明下出处
 - 这么个破工具请不要拿去倒卖
