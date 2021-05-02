@@ -15,6 +15,7 @@
 #include <vector>
 #include <string>
 #include <thread>
+#include <filesystem>
 
 // didnt made this pattern scan - c+p'd from somewhere
 uintptr_t PatternScan(void* module, const char* signature)
@@ -97,6 +98,31 @@ bool GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEntry)
     return pEntry->modBaseAddr;
 }
 
+bool SearchForGame(std::string& out)
+{
+    auto CurrentPath = std::filesystem::current_path();
+    for (auto& p : std::filesystem::directory_iterator(CurrentPath))
+    {
+        if (!p.is_directory())
+            continue;
+
+        for (auto& pp : std::filesystem::directory_iterator(p))
+        {
+            if (pp.is_directory())
+                continue;
+
+            auto path = pp.path().string();
+            if (path.find("YuanShen.exe") != std::string::npos ||
+                path.find("GenshinImpact.exe") != std::string::npos)
+            {
+                out = path;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 DWORD __stdcall Thread1(LPVOID p)
 {
     if (!p)
@@ -134,13 +160,20 @@ int main()
     SetConsoleTitleA("");
     int TargetFPS = FPS_TARGET;
 
-    // check whether is CN or OS ver
-    LPCSTR ProcessPath = GetFileAttributesA(".\\Genshin Impact Game\\YuanShen.exe") != INVALID_FILE_ATTRIBUTES ?
-        ".\\Genshin Impact Game\\YuanShen.exe" : ".\\Genshin Impact Game\\GenshinImpact.exe";
-    
+    // seach for the game in subfolders
+    std::string ProcessPath{};
+    std::string ProcessDir{};
+    if (!SearchForGame(ProcessPath))
+    {
+        printf("Game not found in any subfolders - did you put the unlocker in the right place?\n");
+        return 0;
+    }
+    printf("Game: %s\n\n", ProcessPath.c_str());
+    ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
+
     STARTUPINFOA si{};
     PROCESS_INFORMATION pi{};
-    if (!CreateProcessA(ProcessPath, nullptr, nullptr, nullptr, FALSE, 0, nullptr, ".\\Genshin Impact Game\\", &si, &pi))
+    if (!CreateProcessA(ProcessPath.c_str(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, ProcessDir.c_str(), &si, &pi))
     {
         DWORD code = GetLastError();
         printf("CreateProcess failed (%d): %s", code, GetLastErrorAsString(code).c_str());
