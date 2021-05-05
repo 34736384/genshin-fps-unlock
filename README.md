@@ -6,7 +6,7 @@
  - Supports OS and CN version
  - Should works for future updates
  - If the source needs to be updated, I'll try to do it as soon as possible
- - You can download the compiled binary over at 'Release' if you don't want to compile it yourself
+ - You can download the compiled binary over at '[Release](https://github.com/34736384/genshin-fps-unlock/releases)' if you don't want to compile it yourself
  ## Compiling
  - Use  Visual Studio 2019 Community Edition to compile
  - Not required but I know it works on this version
