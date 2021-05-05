@@ -11,8 +11,8 @@
  - Use  Visual Studio 2019 Community Edition to compile
  - Not required but I know it works on this version
  ## Usage
- - Place the compiled exe into one directory above the game (same folder as launcher.exe)
- - If your 'Genshin Impact Game' folder is not present in the same folder as launcher.exe, just place the exe to one directory above the game folder (e.g. Your game is placed at 'D:\Games\Genshin Impact Game\GenshinImpact.exe', then you would want to have the unlocker in 'C:\Games\unlockfps.exe')
+ - If it is your first time running, run unlocker as admin, then the unlocker will ask you to open the game. This only need to be done once, it's used for acquiring the game path. Then it'll be saved to a config file. After the config is made you can start the game via the unlocker in future sessions.
+ - Place the compiled exe anywhere you want
  - Make sure your game is closed, the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
@@ -27,6 +27,8 @@
  - If you want to change keybinds or the default fps then you can edit the defines at the top of the source
  - [Here](http://cherrytree.at/misc/vk.htm) is a list of keycodes
  - The reason that I didn't made it to be place in the same folder of the game exe is because the game will attempt to verify the files before logging on, and it will treat the unlocker as a game file too which will fail the file integrity check. Producing an 31-4302 error.
+ ## Todo
+ - idk maybe add keybinds and fps settings to config
 
 
 # 原神解锁FPS限制
@@ -41,8 +43,8 @@
 
  - 用VS2019编译，其他版本的也应该可以，没测试过
 ## 食用指南
- - 把解锁器放到游戏执行文件的上一个目录 （和启动器launcher.exe同一个目录）
- - 如果你的游戏不是安装在和launcher.exe同一个目录下的话，把解锁器放到游戏的上一个目录就行（如果游戏是在 'D:\Games\Genshin Impact Game\YuanShen.exe'， 解锁器就放在 'D:\Games\unlockfps.exe'）
+ - 第一次运行的话先以管理员运行，然后手动打开游戏，这样解锁器能够获取到游戏路经并保存在配置文件里，这只需要执行一次，以后就可以直接用解锁器启动游戏了
+ - 解锁器放哪都行
  - 运行之前确保游戏是关闭的
  - 用管理员运行解锁器
  - 解锁器不能关掉

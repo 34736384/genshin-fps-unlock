@@ -16,6 +16,7 @@
 #include <string>
 #include <thread>
 #include <filesystem>
+#include <Psapi.h>
 
 // didnt made this pattern scan - c+p'd from somewhere
 uintptr_t PatternScan(void* module, const char* signature)
@@ -98,29 +99,98 @@ bool GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEntry)
     return pEntry->modBaseAddr;
 }
 
-bool SearchForGame(std::string& out)
+DWORD GetPID(std::string ProcessName)
 {
-    auto CurrentPath = std::filesystem::current_path();
-    for (auto& p : std::filesystem::directory_iterator(CurrentPath))
+    DWORD pid = 0;
+    PROCESSENTRY32 pe32{};
+    pe32.dwSize = sizeof(pe32);
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    for (Process32First(snap, &pe32); Process32Next(snap, &pe32);)
     {
-        if (!p.is_directory())
-            continue;
-
-        for (auto& pp : std::filesystem::directory_iterator(p))
+        if (pe32.szExeFile == ProcessName)
         {
-            if (pp.is_directory())
-                continue;
-
-            auto path = pp.path().string();
-            if (path.find("YuanShen.exe") != std::string::npos ||
-                path.find("GenshinImpact.exe") != std::string::npos)
-            {
-                out = path;
-                return true;
-            }
+            pid = pe32.th32ProcessID;
+            break;
         }
     }
-    return false;
+    CloseHandle(snap);
+    return pid;
+}
+
+std::string ReadConfig()
+{
+    HANDLE hFile = CreateFileA("config", GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        printf("Config not found - Starting first time setup\nPlease leave this open and start the game\nThis only need to be done once\n\n");
+        printf("Waiting for game...\n");
+        
+        DWORD pid = 0;
+        while (true)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            pid = GetPID("YuanShen.exe");
+            if (pid)
+                break;
+            pid = GetPID("GenshinImpact.exe");
+            if (pid)
+                break;
+        }
+
+        HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+        if (!hProcess)
+        {
+            DWORD code = GetLastError();
+            printf("OpenProcess failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
+            ExitProcess(0);
+        }
+
+        char szPath[MAX_PATH]{};
+        K32GetModuleFileNameExA(hProcess, nullptr, szPath, sizeof(szPath));
+
+        // this shouldn't fail
+        hFile = CreateFileA("config", GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        
+        DWORD written = 0;
+        WriteFile(hFile, szPath, strlen(szPath), &written, nullptr);
+        CloseHandle(hFile);
+        CloseHandle(hProcess);
+
+        HWND hwnd = nullptr;
+        while (!hwnd)
+        {
+            hwnd = FindWindowA("UnityWndClass", nullptr);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+        SendMessageA(hwnd, WM_CLOSE, 0, 0);
+
+        // wait for the game to close then continue
+        while (GetPID("YuanShen.exe") || GetPID("GenshinImpact.exe"))
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        system("cls");
+        return szPath;
+    }
+
+    DWORD FileSize = GetFileSize(hFile, nullptr);
+    
+    std::string buf;
+    buf.reserve(MAX_PATH);
+    ZeroMemory(buf.data(), MAX_PATH);
+
+    DWORD read = 0;
+    ReadFile(hFile, buf.data(), FileSize, &read, nullptr);
+    CloseHandle(hFile);
+
+    // check if the path is valid - if not then redo the setup again
+    if (GetFileAttributesA(buf.c_str()) == INVALID_FILE_ATTRIBUTES)
+    {
+        printf("Looks like you've moved your game somewhere else - Lets setup again\n");
+        DeleteFileA("config");
+        return ReadConfig();
+    }
+
+    return buf.c_str();
 }
 
 DWORD __stdcall Thread1(LPVOID p)
@@ -160,14 +230,11 @@ int main()
     SetConsoleTitleA("");
     int TargetFPS = FPS_TARGET;
 
-    // seach for the game in subfolders
-    std::string ProcessPath{};
+    // read path from config
+    std::string ProcessPath = ReadConfig();
     std::string ProcessDir{};
-    if (!SearchForGame(ProcessPath))
-    {
-        printf("Game not found in any subfolders - did you put the unlocker in the right place?\n");
-        return 0;
-    }
+    
+    printf("FPS Unlocker v1.1.0\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
