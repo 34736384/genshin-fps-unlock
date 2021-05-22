@@ -15,7 +15,6 @@
 #include <vector>
 #include <string>
 #include <thread>
-#include <filesystem>
 #include <Psapi.h>
 
 // didnt made this pattern scan - c+p'd from somewhere
@@ -124,37 +123,22 @@ std::string ReadConfig()
     {
         printf("Config not found - Starting first time setup\nPlease leave this open and start the game\nThis only need to be done once\n\n");
         printf("Waiting for game...\n");
-        
-        DWORD pid = 0;
-        while (true)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            pid = GetPID("YuanShen.exe");
-            if (pid)
-                break;
-            pid = GetPID("GenshinImpact.exe");
-            if (pid)
-                break;
-        }
 
-        HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
-        if (!hProcess)
-        {
-            DWORD code = GetLastError();
-            printf("OpenProcess failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
-            ExitProcess(0);
-        }
+        DWORD pid = 0;
+        while (!(pid = GetPID("YuanShen.exe")) && !(pid = GetPID("GenshinImpact.exe")))
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, pid);
 
         char szPath[MAX_PATH]{};
         K32GetModuleFileNameExA(hProcess, nullptr, szPath, sizeof(szPath));
 
         // this shouldn't fail
         hFile = CreateFileA("config", GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-        
+
         DWORD written = 0;
         WriteFile(hFile, szPath, strlen(szPath), &written, nullptr);
         CloseHandle(hFile);
-        CloseHandle(hProcess);
 
         HWND hwnd = nullptr;
         while (!hwnd)
@@ -162,18 +146,25 @@ std::string ReadConfig()
             hwnd = FindWindowA("UnityWndClass", nullptr);
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
-        SendMessageA(hwnd, WM_CLOSE, 0, 0);
+
+        DWORD ExitCode = STILL_ACTIVE;
+        while (ExitCode == STILL_ACTIVE)
+        {
+            SendMessageA(hwnd, WM_CLOSE, 0, 0);
+            GetExitCodeProcess(hProcess, &ExitCode);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
 
         // wait for the game to close then continue
-        while (GetPID("YuanShen.exe") || GetPID("GenshinImpact.exe"))
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        WaitForSingleObject(hProcess, -1);
+        CloseHandle(hProcess);
 
         system("cls");
         return szPath;
     }
 
     DWORD FileSize = GetFileSize(hFile, nullptr);
-    
+
     std::string buf;
     buf.reserve(MAX_PATH);
     ZeroMemory(buf.data(), MAX_PATH);
@@ -193,16 +184,62 @@ std::string ReadConfig()
     return buf.c_str();
 }
 
+void InjectReshade(HANDLE hProcess)
+{
+    std::string buffer;
+    buffer.reserve(GetCurrentDirectoryA(0, nullptr));
+    ZeroMemory(buffer.data(), buffer.capacity());
+    GetCurrentDirectoryA(buffer.capacity(), buffer.data());
+
+    std::string DLLPath = buffer.c_str() + std::string("\\ReShade64.dll");
+    if (GetFileAttributesA(DLLPath.c_str()) == INVALID_FILE_ATTRIBUTES)
+        return;
+
+    printf("\nReShade found\n");
+    printf("Injecting ReShade...\n");
+
+    LPVOID pPath = VirtualAllocEx(hProcess, nullptr, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!pPath)
+    {
+        DWORD code = GetLastError();
+        printf("VirtualAllocEx failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
+        return;
+    }
+
+    WriteProcessMemory(hProcess, pPath, DLLPath.data(), DLLPath.length(), nullptr);
+
+    HANDLE hThread = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, pPath, 0, nullptr);
+    if (!hThread)
+    {
+        DWORD code = GetLastError();
+        printf("CreateRemoteThread failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
+        return;
+    }
+
+    WaitForSingleObject(hThread, -1);
+    VirtualFreeEx(hProcess, pPath, 0, MEM_RELEASE);
+    CloseHandle(hThread);
+
+    printf("ReShade loaded\n\n");
+}
+
 DWORD __stdcall Thread1(LPVOID p)
 {
     if (!p)
         return 0;
+
+    HWND hwnd = nullptr;
+    while (!(hwnd = FindWindowA("UnityWndClass", nullptr)))
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     int* pTargetFPS = (int*)p;
     int fps = *pTargetFPS;
     int prev = fps;
     while (true)
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        if (GetForegroundWindow() != hwnd)
+            continue;
         if (GetAsyncKeyState(KEY_DECREASE) & 1)
             fps -= 20;
         if (GetAsyncKeyState(KEY_INCREASE) & 1)
@@ -215,7 +252,6 @@ DWORD __stdcall Thread1(LPVOID p)
             fps = 60;
         printf("\rFPS: %d - %s    ", fps, fps > 60 ? "ON" : "OFF");
         *pTargetFPS = fps;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     return 0;
@@ -233,17 +269,17 @@ int main()
     // read path from config
     std::string ProcessPath = ReadConfig();
     std::string ProcessDir{};
-    
-    printf("FPS Unlocker v1.1.0\n");
+
+    printf("FPS Unlocker v1.1.2\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
     STARTUPINFOA si{};
     PROCESS_INFORMATION pi{};
-    if (!CreateProcessA(ProcessPath.c_str(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, ProcessDir.c_str(), &si, &pi))
+    if (!CreateProcessA(ProcessPath.c_str(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
     {
         DWORD code = GetLastError();
-        printf("CreateProcess failed (%d): %s", code, GetLastErrorAsString(code).c_str());
+        printf("CreateProcess failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
         return 0;
     }
 
@@ -251,9 +287,10 @@ int main()
     printf("PID: %d\n", pi.dwProcessId);
 
     MODULEENTRY32 hUnityPlayer{};
-    // wait for UnityPlayer.dll to load
     while (!GetModule(pi.dwProcessId, "UnityPlayer.dll", &hUnityPlayer))
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    InjectReshade(pi.hProcess);
 
     printf("UnityPlayer: %X%X\n", (uintptr_t)hUnityPlayer.modBaseAddr >> 32 & -1, hUnityPlayer.modBaseAddr);
 
@@ -261,7 +298,7 @@ int main()
     if (!mem)
     {
         DWORD code = GetLastError();
-        printf("VirtualAlloc failed (%d): %s", code, GetLastErrorAsString(code).c_str());
+        printf("VirtualAlloc failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
         return 0;
     }
 

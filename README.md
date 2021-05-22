@@ -16,6 +16,7 @@
  - Make sure your game is closed, the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
+ - To inject reshade, place the reshade dll in the same folder as the unlocker
  ### Default Keybinds
  - **END** to toggle on/off
  - **UP ARROW** to increase limit (+20)
