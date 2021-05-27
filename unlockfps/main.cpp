@@ -257,7 +257,7 @@ DWORD __stdcall Thread1(LPVOID p)
     return 0;
 }
 
-int main()
+int main(int argc, char** argv)
 {
     std::atexit([] {
         system("pause");
@@ -266,17 +266,24 @@ int main()
     SetConsoleTitleA("");
     int TargetFPS = FPS_TARGET;
 
+    std::string CommandLine{};
+    if (argc > 1)
+    {
+        CommandLine = GetCommandLineA();
+        CommandLine = CommandLine.substr(CommandLine.find_first_of(' ') + 2);
+    }
+    
     // read path from config
     std::string ProcessPath = ReadConfig();
     std::string ProcessDir{};
 
-    printf("FPS Unlocker v1.1.2\n");
+    printf("FPS Unlocker v1.2.0\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
     STARTUPINFOA si{};
     PROCESS_INFORMATION pi{};
-    if (!CreateProcessA(ProcessPath.c_str(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
+    if (!CreateProcessA(ProcessPath.c_str(), (LPSTR)CommandLine.c_str(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
     {
         DWORD code = GetLastError();
         printf("CreateProcess failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
