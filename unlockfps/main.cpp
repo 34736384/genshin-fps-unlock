@@ -323,13 +323,43 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    // calcuate the offset to where the fps value is stored
-    uintptr_t rip = address + 2;
-    uint32_t rel = *(uint32_t*)(rip + 2);
-    uintptr_t offset = rip + rel + 6;
-    offset -= (uintptr_t)mem;
-    printf("Offset: %X\n", offset);
-    offset = (uintptr_t)hUnityPlayer.modBaseAddr + offset;
+    // calculate the offset to where the fps value is stored
+    uintptr_t pfps = 0;
+    {
+        uintptr_t rip = address + 2;
+        uint32_t rel = *(uint32_t*)(rip + 2);
+        pfps = rip + rel + 6;
+        pfps -= (uintptr_t)mem;
+        printf("FPS Offset: %X\n", pfps);
+        pfps = (uintptr_t)hUnityPlayer.modBaseAddr + pfps;
+    }
+
+    // calculate where vsync value is stored
+    address = PatternScan(mem, "E8 ? ? ? ? 8B E8 49 8B 1E");
+    uintptr_t pvsync = 0;
+    if (address)
+    {
+        uintptr_t ppvsync = 0;
+        uintptr_t rip = address;
+        int32_t rel = *(int32_t*)(rip + 1);
+        rip = rip + rel + 5;
+        uint64_t rax = *(uint32_t*)(rip + 3);
+        ppvsync = rip + rax + 7;
+        ppvsync -= (uintptr_t)mem;
+        printf("VSync Offset: %X\n", ppvsync);
+        ppvsync = (uintptr_t)hUnityPlayer.modBaseAddr + ppvsync;
+
+        uintptr_t buffer = 0;
+        while (!buffer)
+        {
+            ReadProcessMemory(pi.hProcess, (LPCVOID)ppvsync, &buffer, sizeof(buffer), nullptr);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        rip += 7;
+        pvsync = *(uint32_t*)(rip + 2);
+        pvsync = buffer + pvsync;
+    }
 
     VirtualFree(mem, 0, MEM_RELEASE);
     printf("Done\n\n");
@@ -344,11 +374,20 @@ int main(int argc, char** argv)
         // runs a check every 2 seconds
         std::this_thread::sleep_for(std::chrono::seconds(2));
         int fps = 0;
-        ReadProcessMemory(pi.hProcess, (LPVOID)offset, &fps, sizeof(fps), nullptr);
+        ReadProcessMemory(pi.hProcess, (LPVOID)pfps, &fps, sizeof(fps), nullptr);
         if (fps == -1)
             continue;
         if (fps != TargetFPS)
-            WriteProcessMemory(pi.hProcess, (LPVOID)offset, &TargetFPS, sizeof(TargetFPS), nullptr);
+            WriteProcessMemory(pi.hProcess, (LPVOID)pfps, &TargetFPS, sizeof(TargetFPS), nullptr);
+
+        int vsync = 0;
+        ReadProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
+        if (vsync)
+        {
+            vsync = 0;
+            // disable vsync
+            WriteProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
+        }
     }
 
     CloseHandle(pi.hProcess);
