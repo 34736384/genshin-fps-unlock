@@ -277,7 +277,7 @@ int main(int argc, char** argv)
     std::string ProcessPath = ReadConfig();
     std::string ProcessDir{};
 
-    printf("FPS Unlocker v1.2.0\n");
+    printf("FPS Unlocker v1.3.0\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
