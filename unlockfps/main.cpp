@@ -17,6 +17,8 @@
 #include <thread>
 #include <Psapi.h>
 
+bool bStop = false;
+
 // didnt made this pattern scan - c+p'd from somewhere
 uintptr_t PatternScan(void* module, const char* signature)
 {
@@ -141,11 +143,8 @@ std::string ReadConfig()
         CloseHandle(hFile);
 
         HWND hwnd = nullptr;
-        while (!hwnd)
-        {
-            hwnd = FindWindowA("UnityWndClass", nullptr);
+        while (!(hwnd = FindWindowA("UnityWndClass", nullptr)))
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        }
 
         DWORD ExitCode = STILL_ACTIVE;
         while (ExitCode == STILL_ACTIVE)
@@ -235,7 +234,7 @@ DWORD __stdcall Thread1(LPVOID p)
     int* pTargetFPS = (int*)p;
     int fps = *pTargetFPS;
     int prev = fps;
-    while (true)
+    while (!bStop)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         if (GetForegroundWindow() != hwnd)
@@ -277,7 +276,7 @@ int main(int argc, char** argv)
     std::string ProcessPath = ReadConfig();
     std::string ProcessDir{};
 
-    printf("FPS Unlocker v1.3.0\n");
+    printf("FPS Unlocker v1.2.1\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
@@ -366,11 +365,11 @@ int main(int argc, char** argv)
 
     // keybinds thread
     HANDLE hThread = CreateThread(nullptr, 0, Thread1, &TargetFPS, 0, nullptr);
-    if (hThread)
-        CloseHandle(hThread);
 
-    while (true)
+    DWORD ExitCode = STILL_ACTIVE;
+    while (ExitCode == STILL_ACTIVE)
     {
+        GetExitCodeProcess(pi.hProcess, &ExitCode);
         // runs a check every 2 seconds
         std::this_thread::sleep_for(std::chrono::seconds(2));
         int fps = 0;
@@ -390,7 +389,11 @@ int main(int argc, char** argv)
         }
     }
 
+    bStop = true;
+    WaitForSingleObject(hThread, -1);
+    CloseHandle(hThread);
     CloseHandle(pi.hProcess);
+    TerminateProcess((HANDLE)-1, 0);
 
     return 0;
 }
