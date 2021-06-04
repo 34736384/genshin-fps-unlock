@@ -11,6 +11,7 @@
  - Use  Visual Studio 2019 Community Edition to compile
  - Not required but I know it works on this version
  ## Usage
+ - Make sure you have the [Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe) installed
  - If it is your first time running, run unlocker as admin, then the unlocker will ask you to open the game. This only need to be done once, it's used for acquiring the game path. Then it'll be saved to a config file. After the config is made you can start the game via the unlocker in future sessions.
  - Place the compiled exe anywhere you want
  - Make sure your game is closed, the unlocker will automatically start the game for you
@@ -44,6 +45,7 @@
 
  - 用VS2019编译，其他版本的也应该可以，没测试过
 ## 食用指南
+ - 运行前确保系统已安装[Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe)
  - 第一次运行的话先以管理员运行，然后手动打开游戏，这样解锁器能够获取到游戏路经并保存在配置文件里，这只需要执行一次，以后就可以直接用解锁器启动游戏了
  - 解锁器放哪都行
  - 运行之前确保游戏是关闭的
