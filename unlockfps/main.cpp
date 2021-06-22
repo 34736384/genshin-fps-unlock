@@ -268,8 +268,8 @@ int main(int argc, char** argv)
     std::string CommandLine{};
     if (argc > 1)
     {
-        CommandLine = GetCommandLineA();
-        CommandLine = CommandLine.substr(CommandLine.find_first_of(' ') + 2);
+        for (int i = 1; i < argc; i++)
+            CommandLine += argv[i] + std::string(" ");
     }
     
     // read path from config
