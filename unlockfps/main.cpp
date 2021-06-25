@@ -133,7 +133,8 @@ std::string ReadConfig()
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, pid);
 
         char szPath[MAX_PATH]{};
-        K32GetModuleFileNameExA(hProcess, nullptr, szPath, sizeof(szPath));
+        DWORD length = sizeof(szPath);
+        QueryFullProcessImageNameA(hProcess, 0, szPath, &length);
 
         // this shouldn't fail
         hFile = CreateFileA("config", GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -276,7 +277,7 @@ int main(int argc, char** argv)
     std::string ProcessPath = ReadConfig();
     std::string ProcessDir{};
 
-    printf("FPS Unlocker v1.3.3\n");
+    printf("FPS Unlocker v1.3.4\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
