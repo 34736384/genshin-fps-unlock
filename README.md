@@ -22,6 +22,8 @@
  - **END** to toggle on/off
  - **UP ARROW** to increase limit (+20)
  - **DOWN ARROW** to decrease limit (-20)
+ - **RIGHT ARROW** to increase limit slightly (+2)
+ - **LEFT ARROW** to decrease limit slightly (-2)
  - The default fps limit is set to 120
  ## Notes
  - Tested on a new account for two weeks and no bans so far (AR30), can't guaranteed it will be safe forever, But honestly though, I doubt they would ban you for this.
