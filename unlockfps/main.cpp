@@ -3,6 +3,7 @@
 #define KEY_INCREASE_SMALL VK_RIGHT
 #define KEY_DECREASE VK_DOWN
 #define KEY_DECREASE_SMALL VK_LEFT
+#define KEY_COMBO VK_HOME
 #define FPS_TARGET 120
 
 // do not touch anything below
@@ -248,15 +249,16 @@ DWORD __stdcall Thread1(LPVOID p)
     while (!bStop)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        if (GetAsyncKeyState(KEY_DECREASE) & 1)
+        bool comboPressed = GetAsyncKeyState(KEY_COMBO);
+        if (comboPressed && GetAsyncKeyState(KEY_DECREASE) & 1)
             fps -= 20;
-        if (GetAsyncKeyState(KEY_DECREASE_SMALL) & 1)
+        if (comboPressed && GetAsyncKeyState(KEY_DECREASE_SMALL) & 1)
             fps -= 2;
-        if (GetAsyncKeyState(KEY_INCREASE) & 1)
+        if (comboPressed && GetAsyncKeyState(KEY_INCREASE) & 1)
             fps += 20;
-        if (GetAsyncKeyState(KEY_INCREASE_SMALL) & 1)
+        if (comboPressed && GetAsyncKeyState(KEY_INCREASE_SMALL) & 1)
             fps += 2;
-        if (GetAsyncKeyState(KEY_TOGGLE) & 1)
+        if (comboPressed && GetAsyncKeyState(KEY_TOGGLE)  & 1)
             fps = fps != 60 ? 60 : prev;
         if (prev != fps)
             WriteConfig(GamePath, fps);

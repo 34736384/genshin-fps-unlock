@@ -1,3 +1,6 @@
+# Fork with hotkeys patch!
+Meaning changing FPS requires holding combo key (default HOME), for example HOME+RIGHTARROW
+
 # Genshin Impact FPS Unlocker
  - This tool helps you to unlock the 60 fps limit in the game
  - This is an external program uses **WriteProcessMemory** to write the desired fps to  the game
