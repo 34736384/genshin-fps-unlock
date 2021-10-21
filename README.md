@@ -1,6 +1,3 @@
-# Fork with hotkeys patch!
-Meaning changing FPS requires holding combo key (default HOME), for example HOME+RIGHTARROW
-
 # Genshin Impact FPS Unlocker
  - This tool helps you to unlock the 60 fps limit in the game
  - This is an external program uses **WriteProcessMemory** to write the desired fps to  the game
@@ -23,10 +20,10 @@ Meaning changing FPS requires holding combo key (default HOME), for example HOME
  - To inject reshade, place the reshade dll in the same folder as the unlocker
  ### Default Keybinds
  - **END** to toggle on/off
- - **UP ARROW** to increase limit (+20)
- - **DOWN ARROW** to decrease limit (-20)
- - **RIGHT ARROW** to increase limit slightly (+2)
- - **LEFT ARROW** to decrease limit slightly (-2)
+ - **HOME+UPARROW** to increase limit (+20)
+ - **HOME+DOWNARROW** to decrease limit (-20)
+ - **HOME+RIGHTARROW** to increase limit slightly (+2)
+ - **HOME+LEFTARROW** to decrease limit slightly (-2)
  - The default fps limit is set to 120
  ## Notes
  - Tested on a new account for two weeks and no bans so far (AR30), can't guaranteed it will be safe forever, But honestly though, I doubt they would ban you for this.
@@ -59,8 +56,10 @@ Meaning changing FPS requires holding combo key (default HOME), for example HOME
 >使用管理员运行是因为游戏必须由解锁器启动，游戏本身就需要管理员权限了，所以负责启动的也是需要的
 ### 默认热键
 - **END** 开/关
-- **上方向键** 增大FPS上限 （+20）
-- **下方向键** 减少FPS上限 （-20）
+- **HOME+上方向键** 增大FPS上限 （+20）
+- **HOME+下方向键** 减少FPS上限 （-20）
+- **HOME+左方向键** 减少FPS上限 （-2）
+- **HOME+右方向键** 减少FPS上限 （-2）
 - 源里默认的FPS数值是120
 
 ## 注意
