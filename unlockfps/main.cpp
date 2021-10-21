@@ -249,7 +249,7 @@ DWORD __stdcall Thread1(LPVOID p)
     while (!bStop)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        bool comboPressed = GetAsyncKeyState(KEY_COMBO);
+        bool comboPressed = GetAsyncKeyState(KEY_COMBO) & 0x8000;
         if (comboPressed && GetAsyncKeyState(KEY_DECREASE) & 1)
             fps -= 20;
         if (comboPressed && GetAsyncKeyState(KEY_DECREASE_SMALL) & 1)
@@ -293,7 +293,7 @@ int main(int argc, char** argv)
     std::string ProcessPath = GamePath;
     std::string ProcessDir{};
 
-    printf("FPS Unlocker v1.4.0\n");
+    printf("FPS Unlocker v1.4.1\n");
     printf("Game: %s\n\n", ProcessPath.c_str());
     ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
