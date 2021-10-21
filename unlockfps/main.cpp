@@ -380,10 +380,10 @@ int main(int argc, char** argv)
     VirtualFree(mem, 0, MEM_RELEASE);
     printf("Done\n\n");
     printf("Use arrow keys to change limit:\n");
-    printf("  UP:    +20\n");
-    printf("  DOWN:  -20\n");
-    printf("  LEFT:  -2\n");
-    printf("  RIGHT: +2\n\n");
+    printf("  HOME+UP:    +20\n");
+    printf("  HOME+DOWN:  -20\n");
+    printf("  HOME+LEFT:  -2\n");
+    printf("  HOME+RIGHT: +2\n\n");
 
     // keybinds thread
     HANDLE hThread = CreateThread(nullptr, 0, Thread1, &TargetFPS, 0, nullptr);
