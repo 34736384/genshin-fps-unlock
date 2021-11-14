@@ -31,6 +31,7 @@
  - If you want to change keybinds or the default fps then you can edit the defines at the top of the source
  - [Here](http://cherrytree.at/misc/vk.htm) is a list of keycodes
  - The reason that I didn't made it to be place in the same folder of the game exe is because the game will attempt to verify the files before logging on, and it will treat the unlocker as a game file too which will fail the file integrity check. Producing an 31-4302 error.
+ - VSync is automatically disabled by default. To enable VSync, change `VSYNC=0` in `config.ini` to `VSYNC=1`.
  ## Todo
  - idk maybe add keybinds and fps settings to config
 
