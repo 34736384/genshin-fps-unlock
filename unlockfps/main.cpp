@@ -23,6 +23,7 @@
 
 bool bStop = false;
 std::string GamePath{};
+bool VSyncEnable = false;
 int FpsValue = FPS_TARGET;
 
 // didnt made this pattern scan - c+p'd from somewhere
@@ -124,7 +125,7 @@ DWORD GetPID(std::string ProcessName)
     return pid;
 }
 
-bool WriteConfig(std::string GamePath, int fps)
+bool WriteConfig(std::string GamePath, int fps, int VSyncEnable)
 {
     HANDLE hFile = CreateFileA("config.ini", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -137,7 +138,8 @@ bool WriteConfig(std::string GamePath, int fps)
     std::string content{};
     content = "[Setting]\n";
     content += "Path=" + GamePath + "\n";
-    content += "FPS=" + std::to_string(fps);
+    content += "FPS=" + std::to_string(fps) + "\n";
+    content += "VSYNC=" + std::to_string(VSyncEnable);
 
     DWORD written = 0;
     WriteFile(hFile, content.data(), content.size(), &written, nullptr);
@@ -166,7 +168,7 @@ void LoadConfig()
         QueryFullProcessImageNameA(hProcess, 0, szPath, &length);
 
         GamePath = szPath;
-        WriteConfig(GamePath, FpsValue);
+        WriteConfig(GamePath, FpsValue, VSyncEnable);
 
         HWND hwnd = nullptr;
         while (!(hwnd = FindWindowA("UnityWndClass", nullptr)))
@@ -190,6 +192,7 @@ void LoadConfig()
 
     GamePath = reader.Get("Setting", "Path", "");
     FpsValue = reader.GetInteger("Setting", "FPS", FpsValue);
+    VSyncEnable = reader.GetInteger("Setting", "VSYNC", VSyncEnable);
 
     if (GetFileAttributesA(GamePath.c_str()) == INVALID_FILE_ATTRIBUTES)
     {
@@ -261,7 +264,7 @@ DWORD __stdcall Thread1(LPVOID p)
         if (comboPressed && GetAsyncKeyState(KEY_TOGGLE)  & 1)
             fps = fps != 60 ? 60 : prev;
         if (prev != fps)
-            WriteConfig(GamePath, fps);
+            WriteConfig(GamePath, fps, VSyncEnable);
         if (fps > 60)
             prev = fps;
         if (fps < 60)
@@ -403,7 +406,7 @@ int main(int argc, char** argv)
 
         int vsync = 0;
         ReadProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
-        if (vsync)
+        if (vsync && !VSyncEnable)
         {
             vsync = 0;
             // disable vsync
