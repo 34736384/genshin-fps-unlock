@@ -127,7 +127,7 @@ DWORD GetPID(std::string ProcessName)
 
 bool WriteConfig(std::string GamePath, int fps, int VSyncEnable)
 {
-    HANDLE hFile = CreateFileA("config.ini", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    HANDLE hFile = CreateFileA("fps_config.ini", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
     {
         DWORD code = GetLastError();
@@ -148,11 +148,8 @@ bool WriteConfig(std::string GamePath, int fps, int VSyncEnable)
 
 void LoadConfig()
 {
-    if (GetFileAttributesA("config") != INVALID_FILE_ATTRIBUTES)
-        DeleteFileA("config");
-
-    INIReader reader("config.ini");
-    if (reader.ParseError() != 0) 
+    INIReader reader("fps_config.ini");
+    if (reader.ParseError() != 0)
     {
         printf("Config not found - Starting first time setup\nPlease leave this open and start the game\nThis only need to be done once\n\n");
         printf("Waiting for game...\n");
@@ -197,7 +194,7 @@ void LoadConfig()
     if (GetFileAttributesA(GamePath.c_str()) == INVALID_FILE_ATTRIBUTES)
     {
         printf("Looks like you've moved your game somewhere else - Lets setup again\n");
-        DeleteFileA("config.ini");
+        DeleteFileA("fps_config.ini");
         LoadConfig();
     }
 }
@@ -261,7 +258,7 @@ DWORD __stdcall Thread1(LPVOID p)
             fps += 20;
         if (comboPressed && GetAsyncKeyState(KEY_INCREASE_SMALL) & 1)
             fps += 2;
-        if (comboPressed && GetAsyncKeyState(KEY_TOGGLE)  & 1)
+        if (comboPressed && GetAsyncKeyState(KEY_TOGGLE) & 1)
             fps = fps != 60 ? 60 : prev;
         if (prev != fps)
             WriteConfig(GamePath, fps, VSyncEnable);
@@ -290,7 +287,7 @@ int main(int argc, char** argv)
         for (int i = 1; i < argc; i++)
             CommandLine += argv[i] + std::string(" ");
     }
-    
+
     LoadConfig();
     int TargetFPS = FpsValue;
     std::string ProcessPath = GamePath;
