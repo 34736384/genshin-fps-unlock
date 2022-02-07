@@ -284,8 +284,14 @@ int main(int argc, char** argv)
     std::string CommandLine{};
     if (argc > 1)
     {
-        for (int i = 1; i < argc; i++)
+        for (int i = 1; i < argc; i++) {
+            if(strstr(argv[i], "-fpsquiet")) {
+                FreeConsole();
+                continue;
+            };
+            
             CommandLine += argv[i] + std::string(" ");
+        }
     }
 
     LoadConfig();
