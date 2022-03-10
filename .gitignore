@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio build path
+x64/
+x86/
+
+# Visual Studio files
+.vs/
