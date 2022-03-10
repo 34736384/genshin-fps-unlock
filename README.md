@@ -1,5 +1,6 @@
 # Genshin Impact FPS Unlocker
  - This tool helps you to unlock the 60 fps limit in the game
+ - This tool helps to reduce the resource usage of the game when running in the background
  - This is an external program uses **WriteProcessMemory** to write the desired fps to  the game
  - Handle protection bypass is already included
  - Does not require a driver for R/W access
@@ -8,22 +9,22 @@
  - If the source needs to be updated, I'll try to do it as soon as possible
  - You can download the compiled binary over at '[Release](https://github.com/34736384/genshin-fps-unlock/releases)' if you don't want to compile it yourself
  ## Compiling
- - Use  Visual Studio 2019 Community Edition to compile
+ - Use Visual Studio 2022 Community Edition to compile
  - Not required but I know it works on this version
  ## Usage
  - Make sure you have the [Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe) installed
- - If it is your first time running, run unlocker as admin, then the unlocker will ask you to open the game. This only need to be done once, it's used for acquiring the game path. Then it'll be saved to a config file. After the config is made you can start the game via the unlocker in future sessions.
+ - If it is your first time running, run the unlocker as admin, then the unlocker will ask you to open the game. This only need to be done once, it's used for acquiring the game path. Then it'll be saved to a config file. After the config is made you can start the game via the unlocker in future sessions.
  - Place the compiled exe anywhere you want
  - Make sure your game is closed, the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
  - To inject reshade, place the reshade dll in the same folder as the unlocker
  ### Default Keybinds
- - **END** to toggle on/off
- - **HOME+UPARROW** to increase limit (+20)
- - **HOME+DOWNARROW** to decrease limit (-20)
- - **HOME+RIGHTARROW** to increase limit slightly (+2)
- - **HOME+LEFTARROW** to decrease limit slightly (-2)
+ - **HOME+UPARROW** to increase limit (to next preset value or +12)
+ - **HOME+DOWNARROW** to decrease limit (to previous preset value or -12)
+ - **HOME+RIGHTARROW** to increase limit slightly (+1)
+ - **HOME+LEFTARROW** to decrease limit slightly (-1)
+ - **HOME+END** to toggle on/off
  - The default fps limit is set to 120
  ## Notes
  - Tested on a new account for two weeks and no bans so far (AR30), can't guaranteed it will be safe forever, But honestly though, I doubt they would ban you for this.
@@ -39,6 +40,7 @@
 # 原神解锁FPS限制
 
  - 工作原理类似于外部辅助，通过**WriteProcessMemory**把FPS数值写进游戏
+ - 游戏窗口失焦的时候降低FPS省电
  - 不需要通过驱动进行读写操作
  - 支持国服和外服
  - 理论上支持后续版本，不需要更新源码
@@ -46,7 +48,7 @@
 
 ## 编译
 
- - 用VS2019编译，其他版本的也应该可以，没测试过
+ - 用VS2022编译，其他版本的也应该可以，没测试过
 ## 食用指南
  - 运行前确保系统已安装[Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe)
  - 第一次运行的话先以管理员运行，然后手动打开游戏，这样解锁器能够获取到游戏路经并保存在配置文件里，这只需要执行一次，以后就可以直接用解锁器启动游戏了
@@ -56,11 +58,11 @@
  - 解锁器不能关掉
 >使用管理员运行是因为游戏必须由解锁器启动，游戏本身就需要管理员权限了，所以负责启动的也是需要的
 ### 默认热键
-- **END** 开/关
-- **HOME+上方向键** 增大FPS上限 （+20）
-- **HOME+下方向键** 减少FPS上限 （-20）
-- **HOME+左方向键** 减少FPS上限 （-2）
-- **HOME+右方向键** 减少FPS上限 （-2）
+- **HOME+上方向键** 增大FPS上限 （+12）
+- **HOME+下方向键** 减少FPS上限 （-12）
+- **HOME+左方向键** 减少FPS上限 （-1）
+- **HOME+右方向键** 增加FPS上限 （+1）
+- **HOME+END** 禁用/启用功能
 - 源里默认的FPS数值是120
 
 ## 注意
