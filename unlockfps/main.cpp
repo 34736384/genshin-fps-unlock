@@ -13,6 +13,7 @@
 #include <iterator>
 #include <algorithm>
 #include <cmath>
+#include <cinttypes>
 
 #include "bindingthread.h"
 #include "definitions.h"
@@ -180,12 +181,14 @@ int main(int argc, char** argv)
 	ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
 	printf("Available FPS:");
-	std::for_each(std::begin(DEFAULT_FPS_STEPS), std::end(DEFAULT_FPS_STEPS), [](const int& v) { printf(" %d", v); });
+	std::for_each(std::begin(DEFAULT_FPS_STEPS), std::end(DEFAULT_FPS_STEPS), 
+		[](const int& v) { printf(" %d", v); });
 	puts("\n");
 
 	STARTUPINFOA si{};
 	PROCESS_INFORMATION pi{};
-	if (!CreateProcessA(ProcessPath.c_str(), (LPSTR)CommandLine.c_str(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
+	if (!CreateProcessA(ProcessPath.c_str(), (LPSTR)CommandLine.c_str(), nullptr, nullptr, 
+		FALSE, 0, nullptr, nullptr, &si, &pi))
 	{
 		DWORD code = GetLastError();
 		printf("CreateProcess failed (%d): %s\n", code, GetLastErrorAsString(code).c_str());
@@ -201,7 +204,10 @@ int main(int argc, char** argv)
 
 	InjectReshade(pi.hProcess);
 
-	printf("UnityPlayer: %X%X\n", (uintptr_t)hUnityPlayer.modBaseAddr >> 32 & -1, hUnityPlayer.modBaseAddr);
+	if (hUnityPlayer.modBaseAddr) 
+		printf("UnityPlayer: %" PRIXPTR "%" PRIXPTR "\n", 
+			(uintptr_t)hUnityPlayer.modBaseAddr >> 32 & -1,
+			(uintptr_t)hUnityPlayer.modBaseAddr);
 
 	LPVOID mem = VirtualAlloc(nullptr, hUnityPlayer.modBaseSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (!mem)
@@ -211,7 +217,9 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	ReadProcessMemory(pi.hProcess, hUnityPlayer.modBaseAddr, mem, hUnityPlayer.modBaseSize, nullptr);
+	if (hUnityPlayer.modBaseAddr)
+		ReadProcessMemory(pi.hProcess, hUnityPlayer.modBaseAddr, 
+			mem, hUnityPlayer.modBaseSize, nullptr);
 
 	printf("Searching for pattern...\n");
 	/*
@@ -232,7 +240,7 @@ int main(int argc, char** argv)
 		uint32_t rel = *(uint32_t*)(rip + 2);
 		pfps = rip + rel + 6;
 		pfps -= (uintptr_t)mem;
-		printf("FPS Offset: %X\n", pfps);
+		printf("FPS Offset: %" PRIXPTR "\n", pfps);
 		pfps = (uintptr_t)hUnityPlayer.modBaseAddr + pfps;
 	}
 
@@ -248,7 +256,7 @@ int main(int argc, char** argv)
 		uint64_t rax = *(uint32_t*)(rip + 3);
 		ppvsync = rip + rax + 7;
 		ppvsync -= (uintptr_t)mem;
-		printf("VSync Offset: %X\n", ppvsync);
+		printf("VSync Offset: %" PRIXPTR "\n", ppvsync);
 		ppvsync = (uintptr_t)hUnityPlayer.modBaseAddr + ppvsync;
 
 		uintptr_t buffer = 0;
@@ -284,11 +292,13 @@ int main(int argc, char** argv)
 	{
 		GetExitCodeProcess(pi.hProcess, &ExitCode);
 
-		//const auto foregroundHwnd = GetForegroundWindow();
-		LowPower = GetForegroundWindow() != gameHwnd;
-
 		// runs a check every 2 seconds. 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+		// but check more frequently so the game can recover sooner from power saving mode.
+		std::this_thread::sleep_for(std::chrono::milliseconds(LowPower ? 500 : 2000));
+
+		// enter low power mode when the game is in background
+		// check after sleep so the game can recover sooner from power saving mode.
+		LowPower = GetForegroundWindow() != gameHwnd;
 
 		int fps = 0; 
 		ReadProcessMemory(pi.hProcess, (LPVOID)pfps, &fps, sizeof(fps), nullptr);
@@ -302,12 +312,14 @@ int main(int argc, char** argv)
 			WriteProcessMemory(pi.hProcess, (LPVOID)pfps, &targetFPS, sizeof(targetFPS), nullptr);
 
 		int vsync = 0;
-		ReadProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
+		if (pvsync) 
+			ReadProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
 		if (vsync && !VSyncEnable)
 		{
 			vsync = 0;
 			// disable vsync
-			WriteProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
+			if (pvsync)
+				WriteProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
 		}
 	}
 
