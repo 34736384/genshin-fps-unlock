@@ -4,105 +4,94 @@
 #include <algorithm>
 #include <cmath>
 #include <thread>
+
 #include "config.h"
 #include "definitions.h"
+#include "state.h"
 
-#include "variables.h"
-
-int closest(const int& fps) {
-	const auto begin = std::begin(DEFAULT_FPS_STEPS);
-	const auto end = std::end(DEFAULT_FPS_STEPS);
-	auto it = std::lower_bound(begin, end, fps);
-	if (it == begin)
-		return 0;
-	if (it == end)
-		return end - begin - 1;
-
-	it = (std::abs(*(it - 1) - fps) < std::abs(*it - fps)) ? it - 1 : it;
-	return it - begin;
+// index of the largest number that not larger than the value.
+int closest(const int& fps) { 
+	const auto &caps = Configurator::getFpsCaps();
+	const auto it = std::upper_bound(caps.begin(), caps.end(), fps);
+	return max(it - caps.begin() - 1, 0);
 };
 
-void Decrease(const bool& bigStep, int& fpsIndex, int& fpsOffset) {
-	const static auto arrlen = std::end(DEFAULT_FPS_STEPS) - std::begin(DEFAULT_FPS_STEPS);
-	if (bigStep) {
-		if (fpsOffset <= 0) 
-			fpsIndex = max(0, fpsIndex - 1);
-		if (fpsIndex != arrlen - 1 || fpsOffset < BIG_STEP) 
-			fpsOffset = 0;
+int Decrease(const bool& bigStep) {
+	const auto arrlen = Configurator::getFpsCaps().size();
+	const auto fpsIndex = closest(Configurator::getFps());
+	const auto& caps = Configurator::getFpsCaps();
+	const auto& fps = Configurator::getFps();
+	auto newFps = 0;
+	if (bigStep)
+	{
+		if (caps[arrlen - 1] + BIG_STEP < fps)
+			newFps = Configurator::decreaseFps(BIG_STEP);
 		else
-			fpsOffset -= BIG_STEP;
+			if (std::find(caps.begin(), caps.end(), fps) == caps.end())
+				newFps = Configurator::setFps(caps[fpsIndex]);
+			else
+				newFps = Configurator::setFps(caps[max(fpsIndex - 1, 0)]);
 	}
-	else {
-		const auto targetFps = max(DEFAULT_FPS_STEPS[fpsIndex] + fpsOffset - SMALL_STEP, 1);
-		fpsIndex = closest(targetFps);
-		fpsOffset = targetFps - DEFAULT_FPS_STEPS[fpsIndex];
-	}
+	else
+		newFps = Configurator::decreaseFps(SMALL_STEP);
+	return newFps;
 }
 
-void Increase(const bool& bigStep, int& fpsIndex, int& fpsOffset) {
-	const static auto arrlen = std::end(DEFAULT_FPS_STEPS) - std::begin(DEFAULT_FPS_STEPS);
-	if (bigStep) {
-		if (fpsIndex < arrlen - 1) {
-			if (fpsOffset >= 0) 
-				fpsIndex += 1;
-			fpsOffset = 0;
-		}
-		else if (fpsOffset < 0) 
-			fpsOffset = 0;
+int Increase(const bool& bigStep) {
+	const auto arrlen = Configurator::getFpsCaps().size();
+	const auto fpsIndex = closest(Configurator::getFps());
+	const auto& caps = Configurator::getFpsCaps();
+	const auto& fps = Configurator::getFps();
+	auto newFps = 0;
+	if (bigStep)
+		if (caps[arrlen - 1] <= fps)
+			// equal or greater than greatest value in the vector
+			newFps = Configurator::increaseFps(BIG_STEP);
 		else
-			fpsOffset += BIG_STEP;
-	}
-	else {
-		const auto targetFps = DEFAULT_FPS_STEPS[fpsIndex] + fpsOffset + SMALL_STEP;
-		fpsIndex = closest(targetFps);
-		fpsOffset = targetFps - DEFAULT_FPS_STEPS[fpsIndex];
-	}
+			newFps = Configurator::setFps(Configurator::getFpsCaps()[fpsIndex + 1]);
+	else
+		newFps = Configurator::increaseFps(SMALL_STEP);
+	return newFps;
 }
 
 DWORD __stdcall Thread1(LPVOID p)
 {
-	if (!p)
-		return 0;
+	auto prev = Configurator::getFps();
 
-	int* pTargetFPS = (int*)p;
-	int prev = *pTargetFPS;
-	auto fpsIndex = closest(*pTargetFPS);
-	auto fpsOffset = *pTargetFPS - DEFAULT_FPS_STEPS[fpsIndex];
-
-	while (!bStop)
+	while (!State::bStop)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 		bool comboPressed = GetAsyncKeyState(KEY_COMBO) & 0x8000;
 
 		if (comboPressed && GetAsyncKeyState(KEY_DECREASE) & 1) 
-			Decrease(true, fpsIndex, fpsOffset);
+			Decrease(true);
 		if (comboPressed && GetAsyncKeyState(KEY_DECREASE_SMALL) & 1) 
-			Decrease(false, fpsIndex, fpsOffset);
+			Decrease(false);
 		if (comboPressed && GetAsyncKeyState(KEY_INCREASE) & 1) 
-			Increase(true, fpsIndex, fpsOffset);
+			Increase(true);
 		if (comboPressed && GetAsyncKeyState(KEY_INCREASE_SMALL) & 1) 
-			Increase(false, fpsIndex, fpsOffset);
+			Increase(false);
 
 		// toggle
 		if (comboPressed && GetAsyncKeyState(KEY_TOGGLE) & 1)
-			Enabled = !Enabled;
+			State::bEnabled = !State::bEnabled;
 
-		auto fps = DEFAULT_FPS_STEPS[fpsIndex] + fpsOffset;
+		const auto fps = Configurator::getFps();
 
 		if (prev != fps)
-			WriteConfig(GamePath, fpsIndex, fpsOffset, VSyncEnable);
+		{
+			Configurator::WriteConfig();
+		}
 
 		prev = fps;
 
-		if (Enabled)
-			if (LowPower)
+		if (State::bEnabled)
+			if (State::bPowerSavingMode)
 				printf("\rPower Saving     ");
 			else
 				printf("\rTarget FPS: %3d  ", fps);
 		else
-			printf("\rDisabled: %3dfps ", DefaultFPS);
-
-		*pTargetFPS = fps;
+			printf("\rTool Disabled. ");
 	}
 
 	return 0;

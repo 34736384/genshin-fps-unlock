@@ -158,7 +158,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="error.h" />
-    <ClInclude Include="variables.h" />
+    <ClInclude Include="state.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

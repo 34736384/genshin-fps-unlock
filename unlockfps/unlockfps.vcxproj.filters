@@ -44,7 +44,7 @@
     <ClInclude Include="error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="variables.h">
+    <ClInclude Include="state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

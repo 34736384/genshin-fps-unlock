@@ -19,17 +19,11 @@
 #include "definitions.h"
 #include "config.h"
 #include "error.h"
+#include "state.h"
 
-#include "variables.h"
-
-bool bStop = false;
-std::string GamePath{};
-bool VSyncEnable = false;
-int FpsIndex = TARGET_FPS_INDEX;
-int FpsOffset = 0;
-bool LowPower = false;
-bool Enabled = true;
-int DefaultFPS = -1;
+bool State::bStop = false;
+bool State::bPowerSavingMode = false;
+bool State::bEnabled = true;
 
 // didnt made this pattern scan - c+p'd from somewhere
 uintptr_t PatternScan(void* module, const char* signature)
@@ -171,19 +165,14 @@ int main(int argc, char** argv)
 			CommandLine += argv[i] + std::string(" ");
 	}
 
-	LoadConfig();
-	int TargetFPS = DEFAULT_FPS_STEPS[FpsIndex] + FpsOffset;
-	std::string ProcessPath = GamePath;
+	std::string ProcessPath = Configurator::getGamePath();
 	std::string ProcessDir{};
 
 	printf("FPS Unlocker " VERSION "\n");
 	printf("Game: %s\n\n", ProcessPath.c_str());
 	ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
-	printf("Available FPS:");
-	std::for_each(std::begin(DEFAULT_FPS_STEPS), std::end(DEFAULT_FPS_STEPS), 
-		[](const int& v) { printf(" %d", v); });
-	puts("\n");
+	printf("Available FPS: %s\n", Configurator::getFpsCapsStr().c_str());
 
 	STARTUPINFOA si{};
 	PROCESS_INFORMATION pi{};
@@ -278,14 +267,19 @@ int main(int argc, char** argv)
 	printf("  HOME+UP:    Increase the cap\n");
 	printf("  HOME+DOWN:  Decrease the cap\n");
 	printf("  HOME+LEFT:  Decrease the cap by %dfps\n", SMALL_STEP);
-	printf("  HOME+RIGHT: Increase the cap by %dfps\n", BIG_STEP);
+	printf("  HOME+RIGHT: Increase the cap by %dfps\n", SMALL_STEP);
 	printf("  HOME+END:   Toggle on/off\n\n");
 
+	// target game fps for this tool.
+	//int toolFps = Configurator::getFps();
 	// keybinds thread
-	HANDLE hThread = CreateThread(nullptr, 0, Thread1, &TargetFPS, 0, nullptr);
+	//HANDLE hThread = CreateThread(nullptr, 0, Thread1, &toolFps, 0, nullptr);
+	HANDLE hThread = CreateThread(nullptr, 0, Thread1, NULL, 0, nullptr);
 
-	// set gameHWND
+	// get gameHWND
 	EnumWindows(EnumWindowsProcMy, pi.dwProcessId);
+
+	int gameConfigFps = -1;
 
 	DWORD ExitCode = STILL_ACTIVE;
 	while (ExitCode == STILL_ACTIVE)
@@ -294,27 +288,32 @@ int main(int argc, char** argv)
 
 		// runs a check every 2 seconds. 
 		// but check more frequently so the game can recover sooner from power saving mode.
-		std::this_thread::sleep_for(std::chrono::milliseconds(LowPower ? 500 : 2000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(State::bPowerSavingMode ? 500 : 2000));
 
-		// enter low power mode when the game is in background
+		// enter power saving mode when the game is in background
 		// check after sleep so the game can recover sooner from power saving mode.
-		LowPower = GetForegroundWindow() != gameHwnd;
+		State::bPowerSavingMode = GetForegroundWindow() != gameHwnd;
 
-		int fps = 0; 
-		ReadProcessMemory(pi.hProcess, (LPVOID)pfps, &fps, sizeof(fps), nullptr);
-		if (fps == -1) 
+		int currentGameFps = -1; 
+		ReadProcessMemory(pi.hProcess, (LPVOID)pfps, &currentGameFps, sizeof(currentGameFps), nullptr);
+		if (currentGameFps == -1) 
 			continue;
-		if (DefaultFPS == -1)
-			DefaultFPS = fps;
-		const auto targetFPS = Enabled ?
-			(LowPower ? DEFAULT_FPS_STEPS[POWER_SAVING_FPS_INDEX] : TargetFPS) : DefaultFPS;
-		if (fps != targetFPS)
-			WriteProcessMemory(pi.hProcess, (LPVOID)pfps, &targetFPS, sizeof(targetFPS), nullptr);
+		if (gameConfigFps == -1) 
+			gameConfigFps = currentGameFps;
+		// change the fps cap to gameConfigFps(60 by default) if this tool is disabled.
+		// change the fps cap to powerSavingFps(3) if this tool is enabled and the game is in background.
+		// change the fps cap to toolFps(120) if this tool is enabled and the game is in foreground.
+		const auto targetFps = State::bEnabled ?
+			(State::bPowerSavingMode ? Configurator::getPowerSavingFps() : Configurator::getFps()) :
+			gameConfigFps;
+		// the cap in the game config and in this tool are different...
+		if (currentGameFps != targetFps)
+			WriteProcessMemory(pi.hProcess, (LPVOID)pfps, &targetFps, sizeof(targetFps), nullptr);
 
 		int vsync = 0;
 		if (pvsync) 
 			ReadProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
-		if (vsync && !VSyncEnable)
+		if (vsync && !Configurator::getVSync())
 		{
 			vsync = 0;
 			// disable vsync
@@ -323,7 +322,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	bStop = true;
+	State::bStop = true;
 	WaitForSingleObject(hThread, -1);
 	CloseHandle(hThread);
 	CloseHandle(pi.hProcess);
