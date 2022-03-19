@@ -34,7 +34,7 @@
  - The reason that I didn't made it to be place in the same folder of the game exe is because the game will attempt to verify the files before logging on, and it will treat the unlocker as a game file too which will fail the file integrity check. Producing an 31-4302 error.
  - VSync is automatically disabled by default. To enable VSync, change `VSYNC=0` in `config.ini` to `VSYNC=1`.
  ## Todo
- - idk maybe add keybinds and fps settings to config
+ - idk 
 
 
 # 原神解锁FPS限制
@@ -66,7 +66,7 @@
 - 源里默认的FPS数值是120
 
 ## 注意
-- 已经在新号上测试了两星期，目前并没有任何异常，冒险等级30
+- 已经在新号上测试了两星期，目前并没有任何异常，冒险等级52
 - 使用未认证的第三方软件修改游戏数据是违反了协议条款的，后果自负
 - 想要更改热键的话，修改下源里开头的定义 （[热键码](http://cherrytree.at/misc/vk.htm)）
 - 至于为啥我没写成能在和游戏同一个目录下运行是因为游戏登录的时候会进行文件完整性检测，如果游戏目录内有其他文件也会当做是游戏的文件进行检测。如果把解锁器和游戏放一起的话游戏会把解锁器当成游戏文件检测，从而导致报错（31-4302）
