@@ -135,6 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,7 +149,9 @@
     <ClCompile Include="bindingthread.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="error.cpp" />
+    <ClCompile Include="keybind.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="state.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -158,6 +161,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="error.h" />
+    <ClInclude Include="keybind.h" />
     <ClInclude Include="state.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

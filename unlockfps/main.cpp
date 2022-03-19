@@ -15,15 +15,12 @@
 #include <cmath>
 #include <cinttypes>
 
+#include "keybind.h"
 #include "bindingthread.h"
 #include "definitions.h"
-#include "config.h"
 #include "error.h"
 #include "state.h"
-
-bool State::bStop = false;
-bool State::bPowerSavingMode = false;
-bool State::bEnabled = true;
+#include "config.h"
 
 // didnt made this pattern scan - c+p'd from somewhere
 uintptr_t PatternScan(void* module, const char* signature)
@@ -165,14 +162,14 @@ int main(int argc, char** argv)
 			CommandLine += argv[i] + std::string(" ");
 	}
 
-	std::string ProcessPath = Configurator::getGamePath();
+	std::string ProcessPath = Config::GetGamePath();
 	std::string ProcessDir{};
 
 	printf("FPS Unlocker " VERSION "\n");
 	printf("Game: %s\n\n", ProcessPath.c_str());
 	ProcessDir = ProcessPath.substr(0, ProcessPath.find_last_of("\\"));
 
-	printf("Available FPS: %s\n", Configurator::getFpsCapsStr().c_str());
+	printf("Available FPS: %s\n", Config::GetFpsCapsStr().c_str());
 
 	STARTUPINFOA si{};
 	PROCESS_INFORMATION pi{};
@@ -263,17 +260,24 @@ int main(int argc, char** argv)
 	VirtualFree(mem, 0, MEM_RELEASE);
 	printf("Done\n\n");
 
-	printf("Use Home + arrow keys to change the FPS cap:\n");
-	printf("  HOME+UP:    Increase the cap\n");
-	printf("  HOME+DOWN:  Decrease the cap\n");
-	printf("  HOME+LEFT:  Decrease the cap by %dfps\n", SMALL_STEP);
-	printf("  HOME+RIGHT: Increase the cap by %dfps\n", SMALL_STEP);
-	printf("  HOME+END:   Toggle on/off\n\n");
+	const auto toName = [](const int& vkey) {
+		return KeyBind::GetVKString(vkey).substr(3); // remove 'VK_'
+	};
 
-	// target game fps for this tool.
-	//int toolFps = Configurator::getFps();
+	printf("Use following keys to change the FPS cap:\n");
+	printf("  %s+%s:    Increase the cap\n", 
+		toName(Config::GetComboKey()).c_str(), toName(Config::GetIncreaseKey(true)).c_str());
+	printf("  %s+%s:  Decrease the cap\n", 
+		toName(Config::GetComboKey()).c_str(), toName(Config::GetDecreaseKey(true)).c_str());
+	printf("  %s+%s:  Decrease the cap by %d fps\n", 
+		toName(Config::GetComboKey()).c_str(), toName(Config::GetIncreaseKey(false)).c_str(), SMALL_STEP);
+	printf("  %s+%s: Increase the cap by %d fps\n", 
+		toName(Config::GetComboKey()).c_str(), toName(Config::GetDecreaseKey(false)).c_str(), SMALL_STEP);
+	printf("  %s+%s:   Toggle on/off\n\n", toName(Config::GetComboKey()).c_str(), toName(Config::GetToggleKey()).c_str());
+
+
+
 	// keybinds thread
-	//HANDLE hThread = CreateThread(nullptr, 0, Thread1, &toolFps, 0, nullptr);
 	HANDLE hThread = CreateThread(nullptr, 0, Thread1, NULL, 0, nullptr);
 
 	// get gameHWND
@@ -292,7 +296,10 @@ int main(int argc, char** argv)
 
 		// enter power saving mode when the game is in background
 		// check after sleep so the game can recover sooner from power saving mode.
-		State::bPowerSavingMode = GetForegroundWindow() != gameHwnd;
+		//State::bPowerSavingMode = (GetForegroundWindow() != gameHwnd) && Config::IsPowerSavingEnabled();
+		auto inFocus = (GetForegroundWindow() == gameHwnd);
+		auto lpState = State::GetPowerSavingState(inFocus);
+		State::bPowerSavingMode = lpState && Config::IsPowerSavingEnabled();
 
 		int currentGameFps = -1; 
 		ReadProcessMemory(pi.hProcess, (LPVOID)pfps, &currentGameFps, sizeof(currentGameFps), nullptr);
@@ -304,7 +311,7 @@ int main(int argc, char** argv)
 		// change the fps cap to powerSavingFps(3) if this tool is enabled and the game is in background.
 		// change the fps cap to toolFps(120) if this tool is enabled and the game is in foreground.
 		const auto targetFps = State::bEnabled ?
-			(State::bPowerSavingMode ? Configurator::getPowerSavingFps() : Configurator::getFps()) :
+			(State::bPowerSavingMode ? Config::GetPowerSavingFps() : Config::GetFps()) :
 			gameConfigFps;
 		// the cap in the game config and in this tool are different...
 		if (currentGameFps != targetFps)
@@ -313,7 +320,7 @@ int main(int argc, char** argv)
 		int vsync = 0;
 		if (pvsync) 
 			ReadProcessMemory(pi.hProcess, (LPVOID)pvsync, &vsync, sizeof(vsync), nullptr);
-		if (vsync && !Configurator::getVSync())
+		if (vsync && !Config::GetVSync())
 		{
 			vsync = 0;
 			// disable vsync

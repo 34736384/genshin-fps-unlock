@@ -4,16 +4,26 @@
 #include <cstdio>
 #include <TlHelp32.h>
 #include "error.h"
+#include "keybind.h"
 
-std::string Configurator::gamePath;
-int Configurator::fps;
-std::vector<int> Configurator::fpsCaps;
-int Configurator::powerSavingFps;
-bool Configurator::vsync;
+std::string Config::gamePath;
+int Config::fps;
+std::vector<int> Config::fpsCaps;
+bool Config::powerSavingEnabled;
+int Config::powerSavingFps;
+int Config::powerSavingDelay;
+bool Config::vsync;
 
-Configurator::Initializer Configurator::initializer;
+int Config::comboKey;
+int Config::toggleKey;
+int Config::increaseKey;
+int Config::increaseSmallKey;
+int Config::decreaseKey;
+int Config::decreaseSmallKey;
 
-DWORD Configurator::GetPID(std::string ProcessName)
+Config::Init Config::init;
+
+DWORD Config::GetPID(std::string ProcessName)
 {
 	DWORD pid = 0;
 	PROCESSENTRY32 pe32{};
@@ -31,7 +41,7 @@ DWORD Configurator::GetPID(std::string ProcessName)
 	return pid;
 }
 
-bool Configurator::WriteConfig()
+bool Config::WriteConfig()
 {
 	HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ,
 		nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -46,16 +56,28 @@ bool Configurator::WriteConfig()
 	content = "[" INI_SECTION_SETTING "]\n";
 	content += INI_KEY_PATH "=" + gamePath + "\n";
 	content += INI_KEY_FPS "=" + std::to_string(fps) + "\n";
-	content += INI_KEY_POWER_SAVING_FPS "=" + std::to_string(powerSavingFps) + "\n";
-	content += INI_KEY_FPS_CAPS "=" + fpsCaps2str() + "\n";
-	content += INI_KEY_VSYNC "=" + std::to_string(vsync);
+	content += INI_KEY_D_POWER_SAVING_ENABLED "=" + std::to_string(powerSavingEnabled) + "\n";
+	content += INI_KEY_D_POWER_SAVING_FPS "=" + std::to_string(powerSavingFps) + "\n";
+	content += INI_KEY_DELAY "=" + std::to_string(powerSavingDelay) + "\n";
+	content += INI_KEY_FPS_CAPS "=" + GetFpsCapsStr() + "\n";
+	content += INI_KEY_VSYNC "=" + std::to_string(vsync) + "\n";
+
+	content += "\n";
+
+	content += "[" INI_SECTION_KEY_BINDING "]\n";
+	content += INI_KEY_COMBO "=" + KeyBind::GetVKString(comboKey) + "\n";
+	content += INI_KEY_TOGGLE "=" + KeyBind::GetVKString(toggleKey) + "\n";
+	content += INI_KEY_INCREASE "=" + KeyBind::GetVKString(increaseKey) + "\n";
+	content += INI_KEY_INCREASE_SMALL "=" + KeyBind::GetVKString(increaseSmallKey) + "\n";
+	content += INI_KEY_DECREASE "=" + KeyBind::GetVKString(decreaseKey) + "\n";
+	content += INI_KEY_DECREASE_SMALL "=" + KeyBind::GetVKString(decreaseSmallKey) + "\n";
 
 	DWORD written = 0;
 	WriteFile(hFile, content.data(), content.size(), &written, nullptr);
 	CloseHandle(hFile);
 }
 
-void Configurator::createConfig(const INIReader &reader)
+void Config::CreateConfig(const INIReader& reader)
 {
 	printf("Config not found - Starting first time setup\nPlease leave this open and start the game\n"
 		"This only need to be done once\n\n");
@@ -93,18 +115,58 @@ void Configurator::createConfig(const INIReader &reader)
 	system("cls");
 }
 
-void Configurator::LoadConfig()
+void Config::LoadConfig()
 {
 	if (INIReader reader(CONFIG_FILE); reader.ParseError() != 0)
-		createConfig(reader);
-	else {
-		gamePath = reader.Get(INI_SECTION_SETTING, INI_KEY_PATH, "");
-		fps = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_FPS, fps);
-		str2fpsCaps(reader.Get(INI_SECTION_SETTING, INI_KEY_FPS_CAPS, DEFAULT_FPS_CAPS));
-		std::sort(fpsCaps.begin(), fpsCaps.end());
-		powerSavingFps = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_POWER_SAVING_FPS, powerSavingFps);
+	{
+		// default values.
+		comboKey = KEY_COMBO;
+		toggleKey = KEY_TOGGLE;
+		increaseKey = KEY_INCREASE;
+		increaseSmallKey = KEY_INCREASE_SMALL;
+		decreaseKey = KEY_DECREASE;
+		decreaseSmallKey = KEY_DECREASE_SMALL;
 
-		vsync = reader.GetInteger("Setting", "VSYNC", vsync);
+		fps = D_TARGET_FPS;
+		SetFpsCaps(D_FPS_CAPS);
+		powerSavingEnabled = D_POWER_SAVING_ENABLED;
+		powerSavingFps = D_POWER_SAVING_FPS;
+		powerSavingDelay = D_POWER_SAVING_DELAY;
+		vsync = D_VSYNC;
+
+		// Create and save the config file.
+		CreateConfig(reader);
+	}
+	else 
+	{
+		gamePath = reader.Get(INI_SECTION_SETTING, INI_KEY_PATH, "");
+
+		SetFps(reader.GetInteger(INI_SECTION_SETTING, INI_KEY_FPS, D_TARGET_FPS));
+
+		SetFpsCaps(reader.Get(INI_SECTION_SETTING, INI_KEY_FPS_CAPS, D_FPS_CAPS));
+		std::sort(fpsCaps.begin(), fpsCaps.end());
+
+		powerSavingEnabled = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_D_POWER_SAVING_ENABLED, D_POWER_SAVING_ENABLED);
+		SetPowerSavingFps(reader.GetInteger(INI_SECTION_SETTING, INI_KEY_D_POWER_SAVING_FPS, D_POWER_SAVING_FPS));
+		SetPowerSavingDelay(reader.GetInteger(INI_SECTION_SETTING, INI_KEY_DELAY, D_POWER_SAVING_DELAY));
+
+		vsync = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_VSYNC, D_VSYNC);
+
+		const auto ckText = reader.Get(INI_SECTION_KEY_BINDING, INI_KEY_COMBO, std::to_string(KEY_COMBO));
+		comboKey = KeyBind::GetValue(ckText);
+		
+		const auto tkText = reader.Get(INI_SECTION_KEY_BINDING, INI_KEY_TOGGLE, std::to_string(KEY_TOGGLE));
+		toggleKey = KeyBind::GetValue(tkText);
+		
+		const auto ikText = reader.Get(INI_SECTION_KEY_BINDING, INI_KEY_INCREASE, std::to_string(KEY_INCREASE));
+		increaseKey = KeyBind::GetValue(ikText);
+		const auto sikText = reader.Get(INI_SECTION_KEY_BINDING, INI_KEY_INCREASE_SMALL, std::to_string(KEY_INCREASE_SMALL));
+		increaseSmallKey = KeyBind::GetValue(sikText);
+
+		const auto dkText = reader.Get(INI_SECTION_KEY_BINDING, INI_KEY_DECREASE, std::to_string(KEY_DECREASE));
+		decreaseKey = KeyBind::GetValue(dkText);
+		const auto sdkText = reader.Get(INI_SECTION_KEY_BINDING, INI_KEY_DECREASE_SMALL, std::to_string(KEY_DECREASE_SMALL));
+		decreaseSmallKey = KeyBind::GetValue(sdkText);
 
 		if (GetFileAttributesA(gamePath.c_str()) == INVALID_FILE_ATTRIBUTES)
 		{

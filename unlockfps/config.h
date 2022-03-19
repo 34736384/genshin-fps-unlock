@@ -12,112 +12,162 @@
 
 #include "definitions.h"
 
-class Configurator 
+class Config 
 {
+	friend DWORD __stdcall Thread1(LPVOID p);
+	friend int Closest(const int& fps);
+	friend int Decrease(const bool& bigStep);
+	friend int Increase(const bool& bigStep);
+
 private:
 	static std::string gamePath;
 
 	static int fps;
 	static std::vector<int> fpsCaps;
 
+	static bool powerSavingEnabled;
 	static int powerSavingFps;
+	static int powerSavingDelay;
 
 	static bool vsync;
 
 private:
-	Configurator() = delete;
+	static int comboKey;
+	static int toggleKey;
+	static int increaseKey;
+	static int increaseSmallKey;
+	static int decreaseKey;
+	static int decreaseSmallKey;
+
+private:
+	Config() = delete;
 
 	static DWORD GetPID(std::string ProcessName);
 
-	static void createConfig(const INIReader &reader);
+	static void CreateConfig(const INIReader& reader);
 
-	static const std::string fpsCaps2str()
+	static void LoadConfig();
+
+private:
+	
+	static const void SetFpsCaps(const std::string &str)
 	{
-		std::ostringstream oss;
-		std::for_each(fpsCaps.begin(), fpsCaps.end(), 
-			[&](const int& value) { oss << value << ' ';  });
-		return oss.str();
-	};
-	static const void str2fpsCaps(const std::string &str)
-	{
-		int i;
 		fpsCaps.clear();
+		
+		int i;
 		std::istringstream iss(str);
 		while (iss >> i)
 		{
-			fpsCaps.push_back(i);
+			if (i > 0 && std::find(fpsCaps.begin(), fpsCaps.end(), i) == fpsCaps.end())
+				fpsCaps.push_back(i);
 			if (iss.eof())
 				break;
 		}
 	}
+	static const std::vector<int>& GetFpsCaps()
+	{
+		return fpsCaps;
+	}
 
-	static void LoadConfig();
+	static int SetPowerSavingFps(const int& fps)
+	{
+		return (powerSavingFps = max(fps, MIN_FPS));
+	}
+
+	static int SetPowerSavingDelay(const int& sec)
+	{
+		return (powerSavingDelay = max(sec, 0));
+	}
+
+	static int IncreaseFps(const int& gain)
+	{
+		return (Config::fps += gain);
+	}
+	static int DecreaseFps(const int& loss)
+	{
+		const auto value = Config::fps - loss;
+		return (Config::fps = max(value, MIN_FPS));
+	}
+
+
 
 public:
 	static bool WriteConfig();
 
 	// no setter for this value
-	static std::string getGamePath() 
+	static std::string GetGamePath() 
 	{
 		return gamePath;
 	};
 
-	static int increaseFps(const int &gain)
+	static int SetFps(const int& fps)
 	{
-		return (Configurator::fps += gain);
+		return (Config::fps = max(fps, MIN_FPS));
 	}
-	static int decreaseFps(const int& loss)
-	{
-		const auto value = Configurator::fps - loss;
-		return (Configurator::fps = max(value, MIN_FPS));
-	}
-	static int setFps(const int& fps)
-	{
-		return (Configurator::fps = max(fps, MIN_FPS));
-	}
-	static int getFps() 
+	static int GetFps() 
 	{
 		return fps;
 	};
 
-	// no setter for this value
-	static std::vector<int> &getFpsCaps()
+	static const std::string GetFpsCapsStr()
 	{
-		return fpsCaps;
-	}
-	static std::string getFpsCapsStr()
+		std::ostringstream oss;
+		std::for_each(fpsCaps.begin(), fpsCaps.end(),
+			[&](const int& value) { oss << value << ' ';  });
+		return oss.str();
+	};
+
+	static bool IsPowerSavingEnabled()
 	{
-		return fpsCaps2str();
+		return powerSavingEnabled;
 	}
 
-	// no setter for this value
-	static int getPowerSavingFps()
+	static int GetPowerSavingFps()
 	{
 		return powerSavingFps;
 	};
 
+	static int GetPowerSavingDelay()
+	{
+		return powerSavingDelay;
+	}
+
 	// no setter for this value
-	static bool getVSync()
+	static bool GetVSync()
 	{
 		return vsync;
 	}
 
+	static int GetComboKey()
+	{
+		return comboKey;
+	}
+
+	static int GetToggleKey()
+	{
+		return toggleKey;
+	}
+
+	static int GetIncreaseKey(const bool bigStep)
+	{
+		return bigStep ? increaseKey : increaseSmallKey;
+	}
+
+	static int GetDecreaseKey(const bool bigStep)
+	{
+		return bigStep ? decreaseKey : decreaseSmallKey;
+	}
+
 private: // initialize
-	class Initializer
+	class Init
 	{
 	public:
-		Initializer() 
+		Init() 
 		{
-			// default values. no default value for game path
-			Configurator::str2fpsCaps(std::string(DEFAULT_FPS_CAPS));
-			Configurator::fps = TARGET_FPS;
-			Configurator::powerSavingFps = POWER_SAVING_FPS;
-			Configurator::vsync = DEFAULT_VSYNC;
-
 			// load from the config file. or create if unavailable/invalid.
-			Configurator::LoadConfig();
+			Config::LoadConfig();
 		}
 	};
-	friend class Initializer;
-	static Initializer initializer;
+	friend class Init;
+	static Init init;
 };
