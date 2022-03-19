@@ -1,7 +1,7 @@
 #pragma once
 //#include <WinUser.h>
 
-#define VERSION "v1.4.3"
+#define VERSION "v1.5.0"
  
 #define KEY_COMBO VK_HOME
 #define KEY_TOGGLE VK_END
@@ -14,8 +14,8 @@
 #define INI_KEY_PATH "Path"
 #define INI_KEY_FPS "Fps"
 #define INI_KEY_FPS_CAPS "Fps Caps"
-#define INI_KEY_D_POWER_SAVING_ENABLED "Power Saving Enabled"
-#define INI_KEY_D_POWER_SAVING_FPS "Power Saving Fps"
+#define INI_KEY_POWER_SAVING_ENABLED "Power Saving Enabled"
+#define INI_KEY_POWER_SAVING_FPS "Power Saving Fps"
 #define INI_KEY_DELAY "Power Saving Delay"
 #define INI_KEY_VSYNC "VSYNC"
 

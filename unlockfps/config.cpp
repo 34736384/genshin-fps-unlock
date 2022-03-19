@@ -56,8 +56,8 @@ bool Config::WriteConfig()
 	content = "[" INI_SECTION_SETTING "]\n";
 	content += INI_KEY_PATH "=" + gamePath + "\n";
 	content += INI_KEY_FPS "=" + std::to_string(fps) + "\n";
-	content += INI_KEY_D_POWER_SAVING_ENABLED "=" + std::to_string(powerSavingEnabled) + "\n";
-	content += INI_KEY_D_POWER_SAVING_FPS "=" + std::to_string(powerSavingFps) + "\n";
+	content += INI_KEY_POWER_SAVING_ENABLED "=" + std::to_string(powerSavingEnabled) + "\n";
+	content += INI_KEY_POWER_SAVING_FPS "=" + std::to_string(powerSavingFps) + "\n";
 	content += INI_KEY_DELAY "=" + std::to_string(powerSavingDelay) + "\n";
 	content += INI_KEY_FPS_CAPS "=" + GetFpsCapsStr() + "\n";
 	content += INI_KEY_VSYNC "=" + std::to_string(vsync) + "\n";
@@ -146,8 +146,8 @@ void Config::LoadConfig()
 		SetFpsCaps(reader.Get(INI_SECTION_SETTING, INI_KEY_FPS_CAPS, D_FPS_CAPS));
 		std::sort(fpsCaps.begin(), fpsCaps.end());
 
-		powerSavingEnabled = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_D_POWER_SAVING_ENABLED, D_POWER_SAVING_ENABLED);
-		SetPowerSavingFps(reader.GetInteger(INI_SECTION_SETTING, INI_KEY_D_POWER_SAVING_FPS, D_POWER_SAVING_FPS));
+		powerSavingEnabled = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_POWER_SAVING_ENABLED, D_POWER_SAVING_ENABLED);
+		SetPowerSavingFps(reader.GetInteger(INI_SECTION_SETTING, INI_KEY_POWER_SAVING_FPS, D_POWER_SAVING_FPS));
 		SetPowerSavingDelay(reader.GetInteger(INI_SECTION_SETTING, INI_KEY_DELAY, D_POWER_SAVING_DELAY));
 
 		vsync = reader.GetInteger(INI_SECTION_SETTING, INI_KEY_VSYNC, D_VSYNC);
