@@ -12,6 +12,12 @@ void State::CountDown()
 {
 	static std::chrono::time_point<std::chrono::system_clock> start_time = 
 		std::chrono::system_clock::now();
+
+	if (!bTimeout && !bCounting)
+	{
+		start_time = std::chrono::system_clock::now();
+		bCounting = true;
+	}
 	if (bCounting)
 	{
 		auto now = std::chrono::system_clock::now();
@@ -21,11 +27,6 @@ void State::CountDown()
 			bCounting = false;
 			bTimeout = true;
 		}
-	}
-	else if (!bTimeout)
-	{
-		start_time = std::chrono::system_clock::now();
-		bCounting = true;
 	}
 }
 
