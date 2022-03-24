@@ -1,3 +1,4 @@
+
 # Genshin Impact FPS Unlocker
  - This tool helps you to unlock the 60 fps limit in the game
  - This is an external program uses **WriteProcessMemory** to write the desired fps to  the game
@@ -11,29 +12,31 @@
  - Use  Visual Studio 2019 Community Edition to compile
  - Not required but I know it works on this version
  ## Usage
- - Make sure you have the [Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe) installed
- - If it is your first time running, run unlocker as admin, then the unlocker will ask you to open the game. This only need to be done once, it's used for acquiring the game path. Then it'll be saved to a config file. After the config is made you can start the game via the unlocker in future sessions.
+ - Make sure you have the [Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe) and [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48) installed
+ - If it is your first time running, unlocker will attemp to find your game through registry. If it failes then it will ask you to either browse or run the game.
  - Place the compiled exe anywhere you want
  - Make sure your game is closed, the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
- - To inject reshade, place the reshade dll in the same folder as the unlocker
- ### Default Keybinds
- - **END** to toggle on/off
- - **HOME+UPARROW** to increase limit (+20)
- - **HOME+DOWNARROW** to decrease limit (-20)
- - **HOME+RIGHTARROW** to increase limit slightly (+2)
- - **HOME+LEFTARROW** to decrease limit slightly (-2)
- - The default fps limit is set to 120
+ - To inject other third party plugins (e.g. reshade), go to `Options->Settings->DLLs` and click add
+
+## Version 2.0.0 Changes
+ - Removed key binds
+ - Added a GUI (should removed the need for keybinds)
+ - Added interactable lauch option configurations (Located under `Options->Settings->Lauch Options`) 
+ - Added some QoL features, such as start minimized, minimize to tray, game process priority, and power saving
+ - **Minimize to tray**: Whenever you click minimize or have the `Start Minimized` option checked, the unlocker will automatically minimize to tray
+ - **Game Process Priority**: Changes the process priority on start, and it will be saved in config too!
+ - **Power Saving**: Automatically sets the fps limit to 10 and low process priority upon losing focus to the game (e.g. tabbing out of game)
+ - Added a slider and an input box for changing fps cap
+ - Added an icon
+ - Added game path detection through registry, will fallback to old method if it fails with registry
+ - You can choose different installation of the game in `Options->Setup`
  ## Notes
- - Tested on a new account for two weeks and no bans so far (AR30), can't guaranteed it will be safe forever, But honestly though, I doubt they would ban you for this.
- - Modifying game memory with an unauthorized third party application is a violation of the ToS, so use it at your own risk
- - If you want to change keybinds or the default fps then you can edit the defines at the top of the source
- - [Here](http://cherrytree.at/misc/vk.htm) is a list of keycodes
- - The reason that I didn't made it to be place in the same folder of the game exe is because the game will attempt to verify the files before logging on, and it will treat the unlocker as a game file too which will fail the file integrity check. Producing an 31-4302 error.
- - VSync is automatically disabled by default. To enable VSync, change `VSYNC=0` in `config.ini` to `VSYNC=1`.
+ - My test account is currently AR55, can't guaranteed it will be safe forever, But honestly though, I doubt they would ban you for this.
+ - Modifying game memory with an unauthorized third party application is a violation of the ToS, so use it at your own risk (same thing applies for injecting reshade)
  ## Todo
- - idk maybe add keybinds and fps settings to config
+ - idk maybe add localization or game predownload
 
 
 # 原神解锁FPS限制
@@ -48,25 +51,22 @@
 
  - 用VS2019编译，其他版本的也应该可以，没测试过
 ## 食用指南
- - 运行前确保系统已安装[Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe)
- - 第一次运行的话先以管理员运行，然后手动打开游戏，这样解锁器能够获取到游戏路经并保存在配置文件里，这只需要执行一次，以后就可以直接用解锁器启动游戏了
+ - 运行前确保系统已安装[Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe)和[.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
+ - 第一次运行的话先以管理员运行，解锁器会尝试通过注册表寻找游戏路经，如果找不到的话会提示你浏览游戏位置或者开启游戏
  - 解锁器放哪都行
  - 运行之前确保游戏是关闭的
  - 用管理员运行解锁器
  - 解锁器不能关掉
 >使用管理员运行是因为游戏必须由解锁器启动，游戏本身就需要管理员权限了，所以负责启动的也是需要的
-### 默认热键
-- **END** 开/关
-- **HOME+上方向键** 增大FPS上限 （+20）
-- **HOME+下方向键** 减少FPS上限 （-20）
-- **HOME+左方向键** 减少FPS上限 （-2）
-- **HOME+右方向键** 减少FPS上限 （-2）
-- 源里默认的FPS数值是120
+
+## 2.0.0 版本更新
+ - 看上面的英文版吧，我懒了
 
 ## 注意
-- 已经在新号上测试了两星期，目前并没有任何异常，冒险等级30
+- 目前我小号冒险等级55了
 - 使用未认证的第三方软件修改游戏数据是违反了协议条款的，后果自负
-- 想要更改热键的话，修改下源里开头的定义 （[热键码](http://cherrytree.at/misc/vk.htm)）
-- 至于为啥我没写成能在和游戏同一个目录下运行是因为游戏登录的时候会进行文件完整性检测，如果游戏目录内有其他文件也会当做是游戏的文件进行检测。如果把解锁器和游戏放一起的话游戏会把解锁器当成游戏文件检测，从而导致报错（31-4302）
 - 要转载的话随便，毕竟开源，可以的话就注明下出处
 - 这么个破工具请不要拿去倒卖
+
+## Todo
+- 本地化或者游戏预下载
