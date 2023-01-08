@@ -1,29 +1,29 @@
 
 # Genshin Impact FPS Unlocker
  - This tool helps you to unlock the 60 fps limit in the game
- - This is an external program uses **WriteProcessMemory** to write the desired fps to  the game
+ - This is an external program which uses **WriteProcessMemory** to write the desired fps to the game
  - Handle protection bypass is already included
  - Does not require a driver for R/W access
  - Supports OS and CN version
- - Should works for future updates
+ - Should work for future updates
  - If the source needs to be updated, I'll try to do it as soon as possible
  - You can download the compiled binary over at '[Release](https://github.com/34736384/genshin-fps-unlock/releases)' if you don't want to compile it yourself
  ## Compiling
- - Use  Visual Studio 2019 Community Edition to compile
+ - Use Visual Studio 2019 Community Edition to compile
  - Not required but I know it works on this version
  ## Usage
  - Make sure you have the [Visual C++ 2019 Redistributable (x64)](https://aka.ms/vs/16/release/vc_redist.x64.exe) and [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48) installed
- - If it is your first time running, unlocker will attemp to find your game through registry. If it failes then it will ask you to either browse or run the game.
+ - If it is your first time running, unlocker will attempt to find your game through the registry. If it fails, then it will ask you to either browse or run the game.
  - Place the compiled exe anywhere you want
- - Make sure your game is closed, the unlocker will automatically start the game for you
+ - Make sure your game is closed—the unlocker will automatically start the game for you
  - Run the exe as administrator, and leave the exe running
  >It requires adminstrator because the game needs to be started by the unlocker and the game requires such permission
- - To inject other third party plugins (e.g. reshade), go to `Options->Settings->DLLs` and click add
+ - To inject other third-party plugins (e.g. reshade), go to `Options->Settings->DLLs` and click add
 
 ## Version 2.0.0 Changes
  - Removed key binds
- - Added a GUI (should removed the need for keybinds)
- - Added interactable lauch option configurations (Located under `Options->Settings->Lauch Options`) 
+ - Added a GUI (should remove the need for keybinds)
+ - Added interactable lauch option configurations (Located under `Options->Settings->Lauch Options`)
  - Added some QoL features, such as start minimized, minimize to tray, game process priority, and power saving
  - **Minimize to tray**: Whenever you click minimize or have the `Start Minimized` option checked, the unlocker will automatically minimize to tray
  - **Game Process Priority**: Changes the process priority on start, and it will be saved in config too!
@@ -33,10 +33,10 @@
  - Added game path detection through registry, will fallback to old method if it fails with registry
  - You can choose different installation of the game in `Options->Setup`
  ## Notes
- - My test account is currently AR55, can't guaranteed it will be safe forever, But honestly though, I doubt they would ban you for this.
- - Modifying game memory with an unauthorized third party application is a violation of the ToS, so use it at your own risk (same thing applies for injecting reshade)
+ - My test account is currently AR55, can't guarantee it will be safe forever. But, honestly though, I doubt they would ban you for this.
+ - Modifying game memory with an unauthorized third-party application is a violation of the ToS, so use it at your own risk (same thing applies for injecting reshade)
  ## Todo
- - idk maybe add localization or game predownload
+ - IDK, maybe add localization or game predownload
 
 
 # 原神解锁FPS限制
