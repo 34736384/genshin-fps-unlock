@@ -27,13 +27,13 @@ namespace unlockfpsclr
             
             if (!selectedFile->Contains("GenshinImpact.exe") && !selectedFile->Contains("YuanShen.exe"))
             {
-                MessageBox::Show("Please select the game exe\nGenshinImpact.exe for OS version\nor\nYuanShen.exe for CN version", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+                MessageBox::Show("Please select the videogame executable file\nThat would be 'GenshinImpact.exe' for global version (OS)\nor\n'YuanShen.exe' for chinese version (CN)", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
                 return;
             }
 
             if (!File::Exists(directory + "\\UnityPlayer.dll"))
             {
-                MessageBox::Show("That's not the right place", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+                MessageBox::Show("That does not look like the correct installation location", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
                 return;
             }
 
@@ -87,9 +87,9 @@ namespace unlockfpsclr
             btnConfirm->Visible = true;
             btnBrowse->Visible = false;
             labelHint->Visible = false;
-            labelResult->Text = String::Format("Found {0} installation of the game", result->Count);
+            labelResult->Text = String::Format("Found {0} installation(s) of the videogame", result->Count);
             labelResult->ForeColor = Color::Green;
-            labelSelectInstance->Text = "Select the instance you want to use:";
+            labelSelectInstance->Text = "Select the videogame installation instance that you want to use:";
             comboBoxSelectInst->Visible = true;
             comboBoxSelectInst->Items->AddRange(result->ToArray());
             comboBoxSelectInst->SelectedIndex = 0;
@@ -101,9 +101,9 @@ namespace unlockfpsclr
             btnConfirm->Visible = false;
             btnBrowse->Visible = true;
             labelHint->Visible = true;
-            labelResult->Text = "cannot find your game";
+            labelResult->Text = "The application is unable to find the videogame installation location";
             labelResult->ForeColor = Color::Red;
-            labelSelectInstance->Text = "You can:";
+            labelSelectInstance->Text = "You can either";
             comboBoxSelectInst->Visible = false;
 
             backgroundWorker = gcnew BackgroundWorker();

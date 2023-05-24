@@ -78,7 +78,7 @@ namespace unlockfpsclr {
 			this->linkLabelDescription->Name = L"linkLabelDescription";
 			this->linkLabelDescription->Size = System::Drawing::Size(300, 20);
 			this->linkLabelDescription->TabIndex = 1;
-			this->linkLabelDescription->Text = L"This program is free and open source";
+			this->linkLabelDescription->Text = L"This application program is a free and open source software";
 			this->linkLabelDescription->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->linkLabelDescription->UseCompatibleTextRendering = true;
 			// 
@@ -90,7 +90,7 @@ namespace unlockfpsclr {
 			this->linkLabelSource->Size = System::Drawing::Size(300, 20);
 			this->linkLabelSource->TabIndex = 2;
 			this->linkLabelSource->TabStop = true;
-			this->linkLabelSource->Text = L"Source: https://github.com/34736384/genshin-fps-unlock";
+			this->linkLabelSource->Text = L"https://github.com/34736384/genshin-fps-unlock";
 			this->linkLabelSource->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->linkLabelSource->UseCompatibleTextRendering = true;
 			this->linkLabelSource->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &AboutForm::linkLabelSource_LinkClicked);
@@ -103,7 +103,7 @@ namespace unlockfpsclr {
 			this->linkLabelIssues->Size = System::Drawing::Size(300, 47);
 			this->linkLabelIssues->TabIndex = 3;
 			this->linkLabelIssues->TabStop = true;
-			this->linkLabelIssues->Text = L"If you encounter any problems or have a suggestion\r\nGo ahead and submit an issue "
+			this->linkLabelIssues->Text = L"If you encounter any problems or have a suggestion,\r\ngo ahead and open an issue ticket "
 				L"at\r\n\r\nhttps://github.com/34736384/genshin-fps-unlock/issues";
 			this->linkLabelIssues->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->linkLabelIssues->UseCompatibleTextRendering = true;

@@ -44,7 +44,7 @@ List<String^>^ Managed::TryResolveGamePath()
         for each (auto it in SubKeys)
         {
             auto SubKeyName = it;
-            if (!SubKeyName->Contains("Genshin Impact") && !SubKeyName->Contains(L"Ô­Éñ"))
+            if (!SubKeyName->Contains("Genshin Impact") && !SubKeyName->Contains(L"Ô­ï¿½ï¿½"))
                 continue;
 
             auto SubKey = Uninstall->OpenSubKey(SubKeyName);
@@ -112,7 +112,7 @@ bool Managed::StartGame(Settings^ settings)
 {
     if (Unmanaged::IsGameRunning() || Unmanaged::GetPID("GenshinImpact.exe") || Unmanaged::GetPID("YuanShen.exe"))
     {
-        MessageBox::Show("An instance of the game is already running", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
+        MessageBox::Show("An instance of the videogame process is already running", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
         return false;
     }
 

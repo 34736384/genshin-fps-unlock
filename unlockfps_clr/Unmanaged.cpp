@@ -206,7 +206,7 @@ bool Unmanaged::SetupData()
         */
         uintptr_t address = PatternScan(up, "7F 0F 8B 05 ? ? ? ?");
         if (!address)
-            return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1; // lazy returns, should always evaluate to false
+            return MessageBoxA(nullptr, "Framerate memory address pattern is outdated. Please open an issue ticket at https://github.com/34736384/genshin-fps-unlock/issues to request updates.", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1; // lazy returns, should always evaluate to false
 
         
         uintptr_t rip = address + 2;
@@ -221,7 +221,7 @@ bool Unmanaged::SetupData()
     {
         uintptr_t address = PatternScan(ua, "E8 ? ? ? ? 85 C0 7E 07 E8 ? ? ? ? EB 05");
         if (!address)
-            return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
+            return MessageBoxA(nullptr, "Framerate memory address pattern is outdated. Please open an issue ticket at https://github.com/34736384/genshin-fps-unlock/issues to request updates.", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
         
         uintptr_t rip = address;
         rip += *(int32_t*)(rip + 1) + 5;

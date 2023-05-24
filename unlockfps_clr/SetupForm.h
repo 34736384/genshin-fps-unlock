@@ -120,7 +120,7 @@ namespace unlockfpsclr {
 			this->labelHint->Name = L"labelHint";
 			this->labelHint->Size = System::Drawing::Size(118, 13);
 			this->labelHint->TabIndex = 4;
-			this->labelHint->Text = L"or open your game now";
+			this->labelHint->Text = L"or launch your videogame now";
 			this->labelHint->Visible = false;
 			// 
 			// ttPath

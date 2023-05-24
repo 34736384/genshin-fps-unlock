@@ -60,7 +60,7 @@ namespace unlockfpsclr
             if (auto index = lbDllList->Items->IndexOf(selectedFile); index >= 0)
             {
                 lbDllList->SelectedIndex = index;
-                MessageBox::Show("File already in list", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
+                MessageBox::Show("The specified DLL file is already in the list", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace unlockfpsclr
             pin_ptr<Byte> pinned = &rawBytes[0];
             if (!Unmanaged::VerifyDLL((PVOID)pinned))
             {
-                MessageBox::Show("Invalid File\nThe DLL is either corrupted or 32-bit\nOnly 64-bit DLLs are supported", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+                MessageBox::Show("Invalid DLL file\nThe specified DLL file is either corrupted or supports only 32-bit operating systems. \nThe DLL files which are supported on 64-bit operating systems only can be used here.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
                 return;
             }
 

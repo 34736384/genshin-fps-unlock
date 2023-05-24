@@ -128,7 +128,7 @@ namespace unlockfpsclr {
 			this->btnStartGame->Size = System::Drawing::Size(75, 23);
 			this->btnStartGame->TabIndex = 0;
 			this->btnStartGame->TabStop = false;
-			this->btnStartGame->Text = L"Start Game";
+			this->btnStartGame->Text = L"Launch";
 			this->btnStartGame->UseVisualStyleBackColor = true;
 			this->btnStartGame->Click += gcnew System::EventHandler(this, &MainForm::btnStartGame_Click);
 			// 
@@ -140,7 +140,7 @@ namespace unlockfpsclr {
 			this->ckbAutoStart->Size = System::Drawing::Size(144, 17);
 			this->ckbAutoStart->TabIndex = 1;
 			this->ckbAutoStart->TabStop = false;
-			this->ckbAutoStart->Text = L"Start Game Automatically";
+			this->ckbAutoStart->Text = L"Start game automatically";
 			this->ttAutoStart->SetToolTip(this->ckbAutoStart, L"This will take effect on subsequent launch");
 			this->ckbAutoStart->UseVisualStyleBackColor = true;
 			// 
@@ -233,8 +233,8 @@ namespace unlockfpsclr {
 			// notifyIcon
 			// 
 			this->notifyIcon->BalloonTipIcon = System::Windows::Forms::ToolTipIcon::Info;
-			this->notifyIcon->BalloonTipText = L"Minimized to tray";
-			this->notifyIcon->BalloonTipTitle = L"FPS Unlocker";
+			this->notifyIcon->BalloonTipText = L"Application was minimized to the tray. Double-click on the icon to restore it.";
+			this->notifyIcon->BalloonTipTitle = L"Genshin FPS Unlocker";
 			this->notifyIcon->ContextMenuStrip = this->contextMenuNotify;
 			this->notifyIcon->Text = L"Hello";
 			this->notifyIcon->Visible = true;

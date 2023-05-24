@@ -91,7 +91,7 @@ int main(array<String^>^ args)
 	// check to see if the unlocker is placed with the game
 	if (File::Exists("UnityPlayer.dll") && (File::Exists("GenshinImpact.exe") || File::Exists("YuanShen.exe")))
 	{
-		MessageBox::Show("Do not place unlocker in the same folder as the game", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		MessageBox::Show("Do not place this application in the same folder as the videogame installation", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 		goto Exit;
 	}
 

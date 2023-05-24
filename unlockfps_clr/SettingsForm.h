@@ -160,7 +160,7 @@ namespace unlockfpsclr {
 			this->labelAutoSave->Name = L"labelAutoSave";
 			this->labelAutoSave->Size = System::Drawing::Size(225, 13);
 			this->labelAutoSave->TabIndex = 0;
-			this->labelAutoSave->Text = L"All settings will be automatically saved";
+			this->labelAutoSave->Text = L"Changed settings will be automatically saved";
 			// 
 			// tabControl
 			// 
@@ -210,7 +210,7 @@ namespace unlockfpsclr {
 			this->labelPriority->Name = L"labelPriority";
 			this->labelPriority->Size = System::Drawing::Size(110, 13);
 			this->labelPriority->TabIndex = 4;
-			this->labelPriority->Text = L"Game Process Priority";
+			this->labelPriority->Text = L"Videogame process priority";
 			// 
 			// ckbPowerSave
 			// 
@@ -220,9 +220,8 @@ namespace unlockfpsclr {
 			this->ckbPowerSave->Size = System::Drawing::Size(92, 17);
 			this->ckbPowerSave->TabIndex = 3;
 			this->ckbPowerSave->TabStop = false;
-			this->ckbPowerSave->Text = L"Power Saving";
-			this->toolTip->SetToolTip(this->ckbPowerSave, L"Sets fps to 10 and low process priority upon losing focus (e.g. tabbing out of ga"
-				L"me)");
+			this->ckbPowerSave->Text = L"Enable power saving";
+			this->toolTip->SetToolTip(this->ckbPowerSave, L"Set framerate limit to 10FPS and lower process priority on context switching");
 			this->ckbPowerSave->UseVisualStyleBackColor = true;
 			// 
 			// ckbAutoClose
@@ -233,8 +232,8 @@ namespace unlockfpsclr {
 			this->ckbAutoClose->Size = System::Drawing::Size(77, 17);
 			this->ckbAutoClose->TabIndex = 2;
 			this->ckbAutoClose->TabStop = false;
-			this->ckbAutoClose->Text = L"Auto Close";
-			this->toolTip->SetToolTip(this->ckbAutoClose, L"Automatically close unlocker after game exits");
+			this->ckbAutoClose->Text = L"Automatically close on videogame exit";
+			this->toolTip->SetToolTip(this->ckbAutoClose, L"Automatically close on videogame exit");
 			this->ckbAutoClose->UseVisualStyleBackColor = true;
 			// 
 			// ckbStartMinimized
@@ -245,7 +244,7 @@ namespace unlockfpsclr {
 			this->ckbStartMinimized->Size = System::Drawing::Size(149, 17);
 			this->ckbStartMinimized->TabIndex = 1;
 			this->ckbStartMinimized->TabStop = false;
-			this->ckbStartMinimized->Text = L"Start Minimized (Unlocker)";
+			this->ckbStartMinimized->Text = L"Start unlocker minimized";
 			this->ckbStartMinimized->UseVisualStyleBackColor = true;
 			// 
 			// ckbVSync
@@ -256,7 +255,7 @@ namespace unlockfpsclr {
 			this->ckbVSync->Size = System::Drawing::Size(120, 17);
 			this->ckbVSync->TabIndex = 0;
 			this->ckbVSync->TabStop = false;
-			this->ckbVSync->Text = L"Auto Disable VSync";
+			this->ckbVSync->Text = L"Automatically disable V-Sync";
 			this->ckbVSync->UseVisualStyleBackColor = true;
 			// 
 			// tabPageLaunchOptions
@@ -277,7 +276,7 @@ namespace unlockfpsclr {
 			this->tabPageLaunchOptions->Padding = System::Windows::Forms::Padding(3);
 			this->tabPageLaunchOptions->Size = System::Drawing::Size(249, 197);
 			this->tabPageLaunchOptions->TabIndex = 1;
-			this->tabPageLaunchOptions->Text = L"Launch Options";
+			this->tabPageLaunchOptions->Text = L"Launch";
 			this->tabPageLaunchOptions->UseVisualStyleBackColor = true;
 			// 
 			// monitorNum
@@ -297,7 +296,7 @@ namespace unlockfpsclr {
 			this->labelMonitorNum->Name = L"labelMonitorNum";
 			this->labelMonitorNum->Size = System::Drawing::Size(45, 13);
 			this->labelMonitorNum->TabIndex = 9;
-			this->labelMonitorNum->Text = L"Monitor:";
+			this->labelMonitorNum->Text = L"Display on monitor:";
 			// 
 			// comboWindowMode
 			// 
@@ -309,7 +308,7 @@ namespace unlockfpsclr {
 			this->comboWindowMode->Size = System::Drawing::Size(126, 21);
 			this->comboWindowMode->TabIndex = 8;
 			this->comboWindowMode->TabStop = false;
-			this->toolTip->SetToolTip(this->comboWindowMode, L"Fullscreen Window Mode\r\nThis will only apply if the game is running fullscreen");
+			this->toolTip->SetToolTip(this->comboWindowMode, L"Fullscreen window mode\r\nThis setting works only when the videogame process is running in fullscreen");
 			// 
 			// labelWindowMode
 			// 
@@ -318,7 +317,7 @@ namespace unlockfpsclr {
 			this->labelWindowMode->Name = L"labelWindowMode";
 			this->labelWindowMode->Size = System::Drawing::Size(79, 13);
 			this->labelWindowMode->TabIndex = 7;
-			this->labelWindowMode->Text = L"Window Mode:";
+			this->labelWindowMode->Text = L"Window mode:";
 			// 
 			// labelDummy
 			// 
@@ -367,7 +366,7 @@ namespace unlockfpsclr {
 			this->ckbCustomRes->Size = System::Drawing::Size(114, 17);
 			this->ckbCustomRes->TabIndex = 2;
 			this->ckbCustomRes->TabStop = false;
-			this->ckbCustomRes->Text = L"Custom Resolution";
+			this->ckbCustomRes->Text = L"Use custom resolution";
 			this->ckbCustomRes->UseVisualStyleBackColor = true;
 			// 
 			// ckbFullscreen
@@ -378,7 +377,7 @@ namespace unlockfpsclr {
 			this->ckbFullscreen->Size = System::Drawing::Size(74, 17);
 			this->ckbFullscreen->TabIndex = 1;
 			this->ckbFullscreen->TabStop = false;
-			this->ckbFullscreen->Text = L"Fullscreen";
+			this->ckbFullscreen->Text = L"Run in fullscreen";
 			this->ckbFullscreen->UseVisualStyleBackColor = true;
 			// 
 			// ckbPopupWnd
@@ -389,8 +388,8 @@ namespace unlockfpsclr {
 			this->ckbPopupWnd->Size = System::Drawing::Size(99, 17);
 			this->ckbPopupWnd->TabIndex = 0;
 			this->ckbPopupWnd->TabStop = false;
-			this->ckbPopupWnd->Text = L"Popup Window";
-			this->toolTip->SetToolTip(this->ckbPopupWnd, L"Launch the game in borderless windowed mode");
+			this->ckbPopupWnd->Text = L"Run as popup window";
+			this->toolTip->SetToolTip(this->ckbPopupWnd, L"Launch the videogame in a borderless fullscreen window");
 			this->ckbPopupWnd->UseVisualStyleBackColor = true;
 			// 
 			// tabPageDLLs
@@ -404,7 +403,7 @@ namespace unlockfpsclr {
 			this->tabPageDLLs->Padding = System::Windows::Forms::Padding(3);
 			this->tabPageDLLs->Size = System::Drawing::Size(249, 197);
 			this->tabPageDLLs->TabIndex = 2;
-			this->tabPageDLLs->Text = L"DLLs";
+			this->tabPageDLLs->Text = L"Injection";
 			this->tabPageDLLs->UseVisualStyleBackColor = true;
 			// 
 			// btnDllRemove
@@ -414,7 +413,7 @@ namespace unlockfpsclr {
 			this->btnDllRemove->Size = System::Drawing::Size(107, 23);
 			this->btnDllRemove->TabIndex = 3;
 			this->btnDllRemove->TabStop = false;
-			this->btnDllRemove->Text = L"Remove";
+			this->btnDllRemove->Text = L"Remove DLLs";
 			this->btnDllRemove->UseVisualStyleBackColor = true;
 			this->btnDllRemove->Click += gcnew System::EventHandler(this, &SettingsForm::btnDllRemove_Click);
 			// 
@@ -425,7 +424,7 @@ namespace unlockfpsclr {
 			this->btnDllAdd->Size = System::Drawing::Size(107, 23);
 			this->btnDllAdd->TabIndex = 2;
 			this->btnDllAdd->TabStop = false;
-			this->btnDllAdd->Text = L"Add";
+			this->btnDllAdd->Text = L"Add DLLs";
 			this->btnDllAdd->UseVisualStyleBackColor = true;
 			this->btnDllAdd->Click += gcnew System::EventHandler(this, &SettingsForm::btnDllAdd_Click);
 			// 
@@ -445,7 +444,7 @@ namespace unlockfpsclr {
 			this->labelDLLMessage->Name = L"labelDLLMessage";
 			this->labelDLLMessage->Size = System::Drawing::Size(206, 13);
 			this->labelDLLMessage->TabIndex = 0;
-			this->labelDLLMessage->Text = L"DLLs will be injected in the order of this list";
+			this->labelDLLMessage->Text = L"DLL files will be injected in the order provided on the list";
 			// 
 			// toolTip
 			// 
