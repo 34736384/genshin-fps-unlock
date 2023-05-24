@@ -177,33 +177,74 @@ std::string Unmanaged::GetLastErrorAsString(DWORD code)
 bool Unmanaged::SetupData()
 {
     MODULEENTRY32 UnityPlayer{};
+    MODULEENTRY32 UserAssembly{};
     if (!GetModule(GamePID, "UnityPlayer.dll", &UnityPlayer))
         return false;
 
-    LPVOID mem = VirtualAlloc(nullptr, UnityPlayer.modBaseSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    if (!mem)
+    if (!GetModule(GamePID, "UserAssembly.dll", &UserAssembly))
+        return false;
+
+    LPVOID up = VirtualAlloc(nullptr, UnityPlayer.modBaseSize + UserAssembly.modBaseSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!up)
         return ShowError("VirtualAlloc", GetLastError());
 
-    if (!ReadProcessMemory(GameHandle, UnityPlayer.modBaseAddr, mem, UnityPlayer.modBaseSize, nullptr))
-        return ShowError("ReadProcessMemory", GetLastError()) && VirtualFreeEx(GameHandle, mem, 0, MEM_RELEASE) == -1;
+    if (!ReadProcessMemory(GameHandle, UnityPlayer.modBaseAddr, up, UnityPlayer.modBaseSize, nullptr))
+        return ShowError("ReadProcessMemory", GetLastError()) && VirtualFree(up, 0, MEM_RELEASE) == -1;
 
-    /*
-         7F 0F              jg   0x11
-         8B 05 ? ? ? ?      mov eax, dword ptr[rip+?]
-    */
-    uintptr_t address = PatternScan(mem, "7F 0F 8B 05 ? ? ? ?");
-    if (!address)
-        return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFreeEx(GameHandle, mem, 0, MEM_RELEASE) == -1; // lazy returns, should always evaluate to false
+	LPVOID ua = (LPVOID)((uintptr_t)up + UnityPlayer.modBaseSize);
+	if (!ReadProcessMemory(GameHandle, UserAssembly.modBaseAddr, ua, UserAssembly.modBaseSize, nullptr))
+		return ShowError("ReadProcessMemory", GetLastError()) && VirtualFree(up, 0, MEM_RELEASE) == -1;
 
+	PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)up;
+	PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((uintptr_t)up + dos->e_lfanew);
+    
+    if (nt->FileHeader.TimeDateStamp < 0x645B245A) // <3.7
     {
+        /*
+             7F 0F              jg   0x11
+             8B 05 ? ? ? ?      mov eax, dword ptr[rip+?]
+        */
+        uintptr_t address = PatternScan(up, "7F 0F 8B 05 ? ? ? ?");
+        if (!address)
+            return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1; // lazy returns, should always evaluate to false
+
+        
         uintptr_t rip = address + 2;
         int32_t rel = *(int32_t*)(rip + 2);
         pFPSValue = rip + rel + 6;
-        pFPSValue -= (uintptr_t)mem;
+        pFPSValue -= (uintptr_t)up;
         pFPSValue = (uintptr_t)UnityPlayer.modBaseAddr + pFPSValue;
+        
+
+    }
+    else
+    {
+        uintptr_t address = PatternScan(ua, "E8 ? ? ? ? 85 C0 7E 07 E8 ? ? ? ? EB 05");
+        if (!address)
+            return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
+        
+        uintptr_t rip = address;
+        rip += *(int32_t*)(rip + 1) + 5;
+        rip += *(int32_t*)(rip + 3) + 7;
+        
+        uintptr_t ptr = 0;
+		uintptr_t data = rip - (uintptr_t)ua + (uintptr_t)UserAssembly.modBaseAddr;
+        while (!ptr)
+        {
+			ReadProcessMemory(GameHandle, (LPCVOID)data, &ptr, sizeof(uintptr_t), nullptr);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+		rip = ptr - (uintptr_t)UnityPlayer.modBaseAddr + (uintptr_t)up;
+		while (*(uint8_t*)rip == 0xE8 || *(uint8_t*)rip == 0xE9)
+			rip += *(int32_t*)(rip + 1) + 5;
+
+		pFPSValue = rip + *(int32_t*)(rip + 2) + 6;
+		pFPSValue -= (uintptr_t)up;
+		pFPSValue = (uintptr_t)UnityPlayer.modBaseAddr + pFPSValue;
     }
 
-    address = PatternScan(mem, "E8 ? ? ? ? 8B E8 49 8B 1E");
+    uintptr_t address = PatternScan(up, "E8 ? ? ? ? 8B E8 49 8B 1E");
     if (address)
     {
         uintptr_t ppvsync = 0;
@@ -212,7 +253,7 @@ bool Unmanaged::SetupData()
         rip = rip + rel + 5;
         uint64_t rax = *(uint32_t*)(rip + 3);
         ppvsync = rip + rax + 7;
-        ppvsync -= (uintptr_t)mem;
+        ppvsync -= (uintptr_t)up;
         ppvsync = (uintptr_t)UnityPlayer.modBaseAddr + ppvsync;
 
         uintptr_t buffer = 0;
@@ -227,7 +268,7 @@ bool Unmanaged::SetupData()
         pVSyncValue = buffer + pVSyncValue;
     }
 
-    VirtualFreeEx(GameHandle, mem, 0, MEM_RELEASE);
+    VirtualFree(up, 0, MEM_RELEASE);
 
     return true;
 }
