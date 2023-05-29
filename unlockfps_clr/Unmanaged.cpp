@@ -65,23 +65,34 @@ bool Unmanaged::GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEnt
     if (!pEntry)
         return false;
 
-    MODULEENTRY32 mod32{};
-    mod32.dwSize = sizeof(mod32);
-    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pid);
-    for (Module32First(snap, &mod32); Module32Next(snap, &mod32);)
+	std::vector<HMODULE> modules(1024);
+	ZeroMemory(modules.data(), modules.size() * sizeof(HMODULE));
+	DWORD cbNeeded = 0;
+    
+	if (!K32EnumProcessModules(GameHandle, modules.data(), modules.size() * sizeof(HMODULE), &cbNeeded))
+		return ShowError("K32EnumProcessModules", GetLastError());
+    
+	modules.resize(cbNeeded / sizeof(HMODULE));
+    for (auto& it : modules)
     {
-        if (mod32.th32ProcessID != pid)
-            continue;
+        char szModuleName[MAX_PATH]{};
+		if (!K32GetModuleBaseNameA(GameHandle, it, szModuleName, MAX_PATH))
+			continue;
 
-        if (mod32.szModule == ModuleName)
-        {
-            *pEntry = mod32;
-            break;
-        }
+		if (ModuleName != szModuleName)
+			continue;
+
+		MODULEINFO modInfo{};
+		if (!K32GetModuleInformation(GameHandle, it, &modInfo, sizeof(MODULEINFO)))
+			continue;
+
+		pEntry->modBaseAddr = (BYTE*)modInfo.lpBaseOfDll;
+		pEntry->modBaseSize = modInfo.SizeOfImage;
+		return true;
     }
-    CloseHandle(snap);
+    
 
-    return pEntry->modBaseAddr;
+    return false;
 }
 
 DWORD Unmanaged::GetPID(std::string ProcessName)

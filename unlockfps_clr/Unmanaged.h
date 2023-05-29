@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <string>
 #include <TlHelp32.h>
+#include <Psapi.h>
 #include <vector>
 #include "Settings.h"
 
