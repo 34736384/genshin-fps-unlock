@@ -1,0 +1,18 @@
+﻿{
+  "DllList": [],
+  "Priority": 3,
+  "MonitorNum": 0,
+  "CustomResY": 1080,
+  "CustomResX": 1920,
+  "FPSTarget": 120,
+  "UsePowerSave": false,
+  "StartMinimized": false,
+  "IsExclusiveFullscreen": false,
+  "UseCustomRes": false,
+  "Fullscreen": false,
+  "PopupWindow": false,
+  "AutoClose": false,
+  "AutoDisableVSync": true,
+  "AutoStart": false,
+  "GamePath": "A:\\User\\Games\\ginshine_impact\\Genshin Impact\\Genshin Impact Game\\YuanShen.exe"
+}

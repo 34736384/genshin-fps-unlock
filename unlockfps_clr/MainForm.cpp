@@ -58,14 +58,14 @@ Assembly^ OnAssemblyResolve(Object^ sender, ResolveEventArgs^ args)
 	auto assemblyName = gcnew AssemblyName(args->Name);
 	auto nativeString = static_cast<LPSTR>(static_cast<PVOID>(Marshal::StringToHGlobalAnsi(assemblyName->Name + ".dll")));
 
-	auto resId = dependencies.find(nativeString);
+	const auto resId = dependencies.find(nativeString);
 	if (resId != dependencies.end())
 	{
-		auto rsrc = FindResourceA(nullptr, resId->second, "DLL");
-		auto size = SizeofResource(nullptr, rsrc);
-		auto rsrcData = LoadResource(nullptr, rsrc);
-		auto pData = LockResource(rsrcData);
-		if (pData)
+		const auto rsrc = FindResourceA(nullptr, resId->second, "DLL");
+		const auto size = SizeofResource(nullptr, rsrc);
+		const auto rsrcData = LoadResource(nullptr, rsrc);
+
+		if (const auto pData = LockResource(rsrcData))
 		{
 			array<BYTE>^ rawBytes = gcnew array<BYTE>(size);
 			Marshal::Copy(static_cast<IntPtr>(pData), rawBytes, 0, size);
@@ -112,7 +112,7 @@ namespace unlockfpsclr
 	{
 		// minimize the unlocker if create process was successful
 		if (Managed::StartGame(settings))
-			this->WindowState = System::Windows::Forms::FormWindowState::Minimized;
+			this->WindowState = FormWindowState::Minimized;
 	}
 
 	Void MainForm::settingsMenuItem_Click(Object^ sender, EventArgs^ e)
@@ -123,7 +123,7 @@ namespace unlockfpsclr
 
 	Void MainForm::OnLoad(Object^ sender, EventArgs^ e)
 	{
-		auto hIcon = (HICON)LoadImageA(GetModuleHandleA(nullptr), MAKEINTRESOURCEA(IDI_ICON1), IMAGE_ICON, 32, 32, 0);
+		auto hIcon = static_cast<HICON>(LoadImageA(GetModuleHandleA(nullptr), MAKEINTRESOURCEA(IDI_ICON1), IMAGE_ICON, 32, 32, 0));
 		this->Icon = System::Drawing::Icon::FromHandle(static_cast<IntPtr>(hIcon));
 		notifyIcon->Icon = this->Icon;
 		//DestroyIcon(hIcon);
@@ -139,7 +139,7 @@ namespace unlockfpsclr
 		inputFPS->DataBindings->Add("Value", settings, "FPSTarget", false, DataSourceUpdateMode::OnPropertyChanged);
 
 		if (settings->StartMinimized)
-			this->WindowState = System::Windows::Forms::FormWindowState::Minimized;
+			this->WindowState = FormWindowState::Minimized;
 
 		if (settings->AutoStart)
 			Managed::StartGame(settings);
@@ -201,7 +201,7 @@ namespace unlockfpsclr
 
 	Void MainForm::OnProgressChanged(Object^ sender, ProgressChangedEventArgs^ e)
 	{
-		auto progress = e->ProgressPercentage;
+		const auto progress = e->ProgressPercentage;
 		if (progress == 100)
 			Application::Exit();
 		if (progress == 10)

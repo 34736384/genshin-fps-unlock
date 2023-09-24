@@ -24,7 +24,7 @@ namespace unlockfpsclr
 
     Void SettingsForm::btnDllRemove_Click(Object^ sender, EventArgs^ e)
     {
-        auto index = lbDllList->SelectedIndex;
+        const auto index = lbDllList->SelectedIndex;
         if (index >= 0)
         {
             // if nothing goes wrong...
@@ -57,7 +57,7 @@ namespace unlockfpsclr
             auto selectedFile = dialog->FileName;
             auto fileName = Path::GetFileName(selectedFile);          
 
-            if (auto index = lbDllList->Items->IndexOf(selectedFile); index >= 0)
+            if (const auto index = lbDllList->Items->IndexOf(selectedFile); index >= 0)
             {
                 lbDllList->SelectedIndex = index;
                 MessageBox::Show("File already in list", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
@@ -68,8 +68,8 @@ namespace unlockfpsclr
             auto fileStream = File::OpenRead(selectedFile);
             auto rawBytes = gcnew array<uint8_t>(0x1000);
             fileStream->Read(rawBytes, 0, 0x1000);
-            pin_ptr<Byte> pinned = &rawBytes[0];
-            if (!Unmanaged::VerifyDLL((PVOID)pinned))
+            const pin_ptr<Byte> pinned = &rawBytes[0];
+            if (!Unmanaged::VerifyDLL(pinned))
             {
                 MessageBox::Show("Invalid File\nThe DLL is either corrupted or 32-bit\nOnly 64-bit DLLs are supported", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
                 return;

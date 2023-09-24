@@ -73,8 +73,11 @@ namespace unlockfpsclr
 
     Void SetupForm::OnProgressChanged(Object^ sender, ProgressChangedEventArgs^ e)
     {
-        auto object = e->UserState;
-        auto percentage = e->ProgressPercentage;
+        //this variable is not be used. 
+
+    	//auto object = e->UserState;
+
+    	const auto percentage = e->ProgressPercentage;
         if (percentage == 100)
             this->Close();
     }

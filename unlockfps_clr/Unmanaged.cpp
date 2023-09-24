@@ -1,4 +1,6 @@
 #include "Unmanaged.h"
+
+#include <sstream>
 #include <thread>
 
 #pragma comment(lib, "user32.lib")
@@ -60,7 +62,7 @@ bool Unmanaged::IsGameRunning()
     return ExitCode == STILL_ACTIVE;
 }
 
-bool Unmanaged::GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEntry)
+bool Unmanaged::GetModule(DWORD pid, std::string_view ModuleName, PMODULEENTRY32 pEntry)
 {
     if (!pEntry)
         return false;
@@ -86,7 +88,7 @@ bool Unmanaged::GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEnt
 		if (!K32GetModuleInformation(GameHandle, it, &modInfo, sizeof(MODULEINFO)))
 			continue;
 
-		pEntry->modBaseAddr = (BYTE*)modInfo.lpBaseOfDll;
+        pEntry->modBaseAddr = static_cast<BYTE*>(modInfo.lpBaseOfDll);
 		pEntry->modBaseSize = modInfo.SizeOfImage;
 		return true;
     }
@@ -95,7 +97,7 @@ bool Unmanaged::GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEnt
     return false;
 }
 
-DWORD Unmanaged::GetPID(std::string ProcessName)
+DWORD Unmanaged::GetPID(std::string_view ProcessName)
 {
     DWORD pid = 0;
     PROCESSENTRY32 pe32{};
@@ -117,8 +119,8 @@ uintptr_t Unmanaged::PatternScan(PVOID module, LPCSTR signature)
 {
     static auto pattern_to_byte = [](const char* pattern) {
         auto bytes = std::vector<int>{};
-        auto start = const_cast<char*>(pattern);
-        auto end = const_cast<char*>(pattern) + strlen(pattern);
+        const auto start = const_cast<char*>(pattern);
+        const auto end = const_cast<char*>(pattern) + strlen(pattern);
 
         for (auto current = start; current < end; ++current) {
             if (*current == '?') {
@@ -134,15 +136,15 @@ uintptr_t Unmanaged::PatternScan(PVOID module, LPCSTR signature)
         return bytes;
     };
 
-    auto dosHeader = (PIMAGE_DOS_HEADER)module;
-    auto ntHeaders = (PIMAGE_NT_HEADERS)((std::uint8_t*)module + dosHeader->e_lfanew);
+    const auto dosHeader = static_cast<PIMAGE_DOS_HEADER>(module);
+    const auto ntHeaders = reinterpret_cast<PIMAGE_NT_HEADERS>(static_cast<std::uint8_t*>(module) + dosHeader->e_lfanew);
 
-    auto sizeOfImage = ntHeaders->OptionalHeader.SizeOfImage;
-    auto patternBytes = pattern_to_byte(signature);
-    auto scanBytes = reinterpret_cast<std::uint8_t*>(module);
+    const auto sizeOfImage = ntHeaders->OptionalHeader.SizeOfImage;
+    const auto patternBytes = pattern_to_byte(signature);
+    const auto scanBytes = reinterpret_cast<std::uint8_t*>(module);
 
-    auto s = patternBytes.size();
-    auto d = patternBytes.data();
+	const auto s = patternBytes.size();
+    const auto d = patternBytes.data();
 
     for (auto i = 0ul; i < sizeOfImage - s; ++i) {
         bool found = true;
@@ -153,7 +155,7 @@ uintptr_t Unmanaged::PatternScan(PVOID module, LPCSTR signature)
             }
         }
         if (found) {
-            return (uintptr_t)&scanBytes[i];
+            return reinterpret_cast<uintptr_t>(&scanBytes[i]);
         }
     }
     return 0;
@@ -202,12 +204,12 @@ bool Unmanaged::SetupData()
     if (!ReadProcessMemory(GameHandle, UnityPlayer.modBaseAddr, up, UnityPlayer.modBaseSize, nullptr))
         return ShowError("ReadProcessMemory", GetLastError()) && VirtualFree(up, 0, MEM_RELEASE) == -1;
 
-	LPVOID ua = (LPVOID)((uintptr_t)up + UnityPlayer.modBaseSize);
+	LPVOID ua = reinterpret_cast<LPVOID>(reinterpret_cast<uintptr_t>(up) + UnityPlayer.modBaseSize);
 	if (!ReadProcessMemory(GameHandle, UserAssembly.modBaseAddr, ua, UserAssembly.modBaseSize, nullptr))
 		return ShowError("ReadProcessMemory", GetLastError()) && VirtualFree(up, 0, MEM_RELEASE) == -1;
 
-	PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)up;
-	PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((uintptr_t)up + dos->e_lfanew);
+	PIMAGE_DOS_HEADER dos = static_cast<PIMAGE_DOS_HEADER>(up);
+	PIMAGE_NT_HEADERS nt = reinterpret_cast<PIMAGE_NT_HEADERS>(reinterpret_cast<uintptr_t>(up) + dos->e_lfanew);
     
     if (nt->FileHeader.TimeDateStamp < 0x645B245A) // <3.7
     {
@@ -215,67 +217,66 @@ bool Unmanaged::SetupData()
              7F 0F              jg   0x11
              8B 05 ? ? ? ?      mov eax, dword ptr[rip+?]
         */
-        uintptr_t address = PatternScan(up, "7F 0F 8B 05 ? ? ? ?");
+
+        const uintptr_t address = PatternScan(up, "7F 0F 8B 05 ? ? ? ?");
         if (!address)
             return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1; // lazy returns, should always evaluate to false
 
-        
-        uintptr_t rip = address + 2;
-        int32_t rel = *(int32_t*)(rip + 2);
+
+        const uintptr_t rip = address + 2;
+        const int32_t rel = *reinterpret_cast<int32_t*>(rip + 2);
         pFPSValue = rip + rel + 6;
-        pFPSValue -= (uintptr_t)up;
-        pFPSValue = (uintptr_t)UnityPlayer.modBaseAddr + pFPSValue;
+        pFPSValue -= reinterpret_cast<uintptr_t>(up);
+        pFPSValue = reinterpret_cast<uintptr_t>(UnityPlayer.modBaseAddr) + pFPSValue;
         
 
     }
     else
     {
-        uintptr_t address = PatternScan(ua, "E8 ? ? ? ? 85 C0 7E 07 E8 ? ? ? ? EB 05");
+	    const uintptr_t address = PatternScan(ua, "E8 ? ? ? ? 85 C0 7E 07 E8 ? ? ? ? EB 05");
         if (!address)
             return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
         
         uintptr_t rip = address;
-        rip += *(int32_t*)(rip + 1) + 5;
-        rip += *(int32_t*)(rip + 3) + 7;
+        rip += *reinterpret_cast<int32_t*>(rip + 1) + 5;
+        rip += *reinterpret_cast<int32_t*>(rip + 3) + 7;
         
         uintptr_t ptr = 0;
-		uintptr_t data = rip - (uintptr_t)ua + (uintptr_t)UserAssembly.modBaseAddr;
+	    const uintptr_t data = rip - reinterpret_cast<uintptr_t>(ua) + reinterpret_cast<uintptr_t>(UserAssembly.modBaseAddr);
         while (!ptr)
         {
-			ReadProcessMemory(GameHandle, (LPCVOID)data, &ptr, sizeof(uintptr_t), nullptr);
+			ReadProcessMemory(GameHandle, reinterpret_cast<LPCVOID>(data), &ptr, sizeof(uintptr_t), nullptr);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-		rip = ptr - (uintptr_t)UnityPlayer.modBaseAddr + (uintptr_t)up;
-		while (*(uint8_t*)rip == 0xE8 || *(uint8_t*)rip == 0xE9)
-			rip += *(int32_t*)(rip + 1) + 5;
+		rip = ptr - reinterpret_cast<uintptr_t>(UnityPlayer.modBaseAddr) + reinterpret_cast<uintptr_t>(up);
+		while (*reinterpret_cast<uint8_t*>(rip) == 0xE8 || *reinterpret_cast<uint8_t*>(rip) == 0xE9)
+			rip += *reinterpret_cast<int32_t*>(rip + 1) + 5;
 
-		pFPSValue = rip + *(int32_t*)(rip + 2) + 6;
-		pFPSValue -= (uintptr_t)up;
-		pFPSValue = (uintptr_t)UnityPlayer.modBaseAddr + pFPSValue;
+		pFPSValue = rip + *reinterpret_cast<int32_t*>(rip + 2) + 6;
+		pFPSValue -= reinterpret_cast<uintptr_t>(up);
+		pFPSValue = reinterpret_cast<uintptr_t>(UnityPlayer.modBaseAddr) + pFPSValue;
     }
 
-    uintptr_t address = PatternScan(up, "E8 ? ? ? ? 8B E8 49 8B 1E");
-    if (address)
+    if (const uintptr_t address = PatternScan(up, "E8 ? ? ? ? 8B E8 49 8B 1E"))
     {
-        uintptr_t ppvsync = 0;
-        uintptr_t rip = address;
-        int32_t rel = *(int32_t*)(rip + 1);
+	    uintptr_t rip = address;
+	    const int32_t rel = *reinterpret_cast<int32_t*>(rip + 1);
         rip = rip + rel + 5;
-        uint64_t rax = *(uint32_t*)(rip + 3);
-        ppvsync = rip + rax + 7;
-        ppvsync -= (uintptr_t)up;
-        ppvsync = (uintptr_t)UnityPlayer.modBaseAddr + ppvsync;
+	    const uint64_t rax = *reinterpret_cast<uint32_t*>(rip + 3);
+        uintptr_t ppvsync = rip + rax + 7;
+        ppvsync -=  reinterpret_cast<uintptr_t>(up);
+        ppvsync =   reinterpret_cast<uintptr_t>(UnityPlayer.modBaseAddr) + ppvsync;
 
         uintptr_t buffer = 0;
         while (!buffer)
         {
-            ReadProcessMemory(GameHandle, (LPCVOID)ppvsync, &buffer, sizeof(buffer), nullptr);
+            ReadProcessMemory(GameHandle, reinterpret_cast<LPCVOID>(ppvsync), &buffer, sizeof(buffer), nullptr);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
         rip += 7;
-        pVSyncValue = *(uint32_t*)(rip + 2);
+        pVSyncValue = *reinterpret_cast<uint32_t*>(rip + 2);
         pVSyncValue = buffer + pVSyncValue;
     }
 
@@ -352,12 +353,14 @@ void Unmanaged::InjectDLLs(std::vector<std::string> paths)
     VirtualFreeEx(GameHandle, mem, 0, MEM_RELEASE);
 }
 
-bool Unmanaged::ShowError(std::string apiName, DWORD code)
+bool Unmanaged::ShowError(std::string_view apiName, DWORD code)
 {
-    auto errorString = GetLastErrorAsString(code);
-    std::string message = apiName + " failed with code: " + std::to_string(code) + "\n\n";
-    message += errorString;
-    MessageBoxA(nullptr, message.c_str(), "Error", MB_OK | MB_ICONERROR);
+    std::ostringstream message;
+
+	message << apiName << "Failed with code: " << std::to_string(code) << "\n\n"
+			<< GetLastErrorAsString(code);
+    
+    MessageBoxA(nullptr, message.str().c_str(), "Error", MB_OK | MB_ICONERROR);
     return false;
 }
 
@@ -366,13 +369,13 @@ bool Unmanaged::VerifyDLL(PVOID module)
     if (!module)
         return false;
 
-    uintptr_t base = reinterpret_cast<uintptr_t>(module);
+    const uintptr_t base = reinterpret_cast<uintptr_t>(module);
 
-    auto dosHeader = (PIMAGE_DOS_HEADER)base;
+    const auto dosHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(base);
     if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE)
         return false;
 
-    auto ntHeader = (PIMAGE_NT_HEADERS)(base + dosHeader->e_lfanew);
+    const auto ntHeader = reinterpret_cast<PIMAGE_NT_HEADERS>(base + dosHeader->e_lfanew);
     if (ntHeader->Signature != IMAGE_NT_SIGNATURE)
         return false;
 

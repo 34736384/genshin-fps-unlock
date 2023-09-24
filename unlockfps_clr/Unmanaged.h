@@ -29,12 +29,12 @@ namespace Unmanaged
 
 	bool StartProcess(LPCSTR ProcessPath, LPSTR CommandLine, int Priority);
 	bool IsGameRunning();
-	bool GetModule(DWORD pid, std::string ModuleName, PMODULEENTRY32 pEntry);
+	bool GetModule(DWORD pid, std::string_view ModuleName, PMODULEENTRY32 pEntry);
 	bool SetupData();
-	bool ShowError(std::string apiName, DWORD code);
+	bool ShowError(std::string_view apiName, DWORD code);
 	bool VerifyDLL(PVOID module);
 
-	DWORD GetPID(std::string ProcessName);
+	DWORD GetPID(std::string_view ProcessName);
 	uintptr_t PatternScan(PVOID module, LPCSTR signature);
 
 	std::string GetGamePath();
