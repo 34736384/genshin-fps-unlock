@@ -174,8 +174,6 @@ namespace unlockfpsclr
 			if (!Unmanaged::SetupData())
 				continue;
 
-			Managed::InjectDLLs(settings->DllList);
-
 			while (!worker->CancellationPending)
 			{
 				Unmanaged::ApplyFPS(settings->FPSTarget, settings->UsePowerSave);
