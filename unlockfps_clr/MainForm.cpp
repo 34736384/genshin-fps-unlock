@@ -226,6 +226,7 @@ namespace unlockfpsclr
 
 			// hide app icon in taskbar
 			this->ShowInTaskbar = false;
+			this->Hide();
 		}
 	}
 
