@@ -224,6 +224,7 @@ namespace unlockfpsclr
 
 			// hide app icon in taskbar
 			this->ShowInTaskbar = false;
+			this->Hide();
 		}
 	}
 
@@ -232,6 +233,7 @@ namespace unlockfpsclr
 		// restores window and taskbar icon
 		this->WindowState = FormWindowState::Normal;
 		this->ShowInTaskbar = true;
+		this->Show();
 		this->Activate();
 		//notifyIcon->Visible = false;
 	}
