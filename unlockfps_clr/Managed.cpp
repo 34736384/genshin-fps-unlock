@@ -135,5 +135,14 @@ bool Managed::StartGame(Settings^ settings)
     Marshal::FreeHGlobal(static_cast<IntPtr>(nativeCommandLine));
     Marshal::FreeHGlobal(static_cast<IntPtr>(nativeGamePath));
 
+    // Wait for a process with the target name to spawn
+    while (!(Unmanaged::GetPID("GenshinImpact.exe") || Unmanaged::GetPID("YuanShen.exe")))
+    {
+        Sleep(1);
+    }
+
+    // Inject DLLs right after launch
+    Managed::InjectDLLs(settings->DllList);
+
     return result;
 }
