@@ -209,7 +209,7 @@ bool Unmanaged::SetupData()
 	PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)up;
 	PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((uintptr_t)up + dos->e_lfanew);
     
-    if (nt->FileHeader.TimeDateStamp < 0x645B245A) // <3.7
+    if (nt->FileHeader.TimeDateStamp < 0x645B245A) // < 3.7
     {
         /*
              7F 0F              jg   0x11
@@ -230,13 +230,27 @@ bool Unmanaged::SetupData()
     }
     else
     {
-        uintptr_t address = PatternScan(ua, "E8 ? ? ? ? 85 C0 7E 07 E8 ? ? ? ? EB 05");
-        if (!address)
-            return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
-        
-        uintptr_t rip = address;
-        rip += *(int32_t*)(rip + 1) + 5;
-        rip += *(int32_t*)(rip + 3) + 7;
+        uintptr_t rip = 0;
+        if (nt->FileHeader.TimeDateStamp < 0x656FFAF7) // < 4.3
+        {
+            uintptr_t address = PatternScan(ua, "E8 ? ? ? ? 85 C0 7E 07 E8 ? ? ? ? EB 05");
+            if (!address)
+                return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
+
+            rip = address;
+            rip += *(int32_t*)(rip + 1) + 5;
+            rip += *(int32_t*)(rip + 3) + 7;
+        }
+        else
+        {
+			uintptr_t address = PatternScan(ua, "B9 3C 00 00 00 FF 15");
+            if (!address)
+                return MessageBoxA(nullptr, "outdated fps pattern", "Error", MB_OK | MB_ICONERROR) == -1 && VirtualFree(up, 0, MEM_RELEASE) == -1;
+            
+			rip = address;
+            rip += 5;
+			rip += *(int32_t*)(rip + 2) + 6;
+        }
         
         uintptr_t ptr = 0;
 		uintptr_t data = rip - (uintptr_t)ua + (uintptr_t)UserAssembly.modBaseAddr;

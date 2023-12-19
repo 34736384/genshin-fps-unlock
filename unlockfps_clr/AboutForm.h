@@ -68,7 +68,7 @@ namespace unlockfpsclr {
 			this->labelTitle->Padding = System::Windows::Forms::Padding(0, 5, 0, 0);
 			this->labelTitle->Size = System::Drawing::Size(300, 36);
 			this->labelTitle->TabIndex = 0;
-			this->labelTitle->Text = L"Genshin FPS Unlocker\r\nv2.1.4\r\n";
+			this->labelTitle->Text = L"Genshin FPS Unlocker\r\nv2.2.0\r\n";
 			this->labelTitle->TextAlign = System::Drawing::ContentAlignment::TopCenter;
 			// 
 			// linkLabelDescription
