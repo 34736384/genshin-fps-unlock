@@ -19,6 +19,7 @@ public:
 	property bool IsExclusiveFullscreen;
 	property bool StartMinimized;
 	property bool UsePowerSave;
+	property bool EnableHdr;
 
 	property int FPSTarget;
 	property int CustomResX;

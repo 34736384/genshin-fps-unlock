@@ -116,6 +116,11 @@ bool Managed::StartGame(Settings^ settings)
         return false;
     }
 
+    if (settings->EnableHdr) {
+        Unmanaged::registerHDREntry();
+    }
+    
+
     String^ commandLine = "";
 
     if (settings->PopupWindow)

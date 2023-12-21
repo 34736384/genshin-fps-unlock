@@ -22,6 +22,7 @@ Settings^ Settings::InitializeDefaults()
     UseCustomRes = false;
     IsExclusiveFullscreen = false;
     UsePowerSave = false;
+    EnableHdr = false;
 
     FPSTarget = 120;
     CustomResX = 1920;
