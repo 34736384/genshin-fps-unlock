@@ -5,6 +5,7 @@
  - Handle protection bypass is already included
  - Does not require a driver for R/W access
  - Supports OS and CN version
+ - Supports enabling HDR feature through Windows registry modification
  - Should work for future updates
  - If the source needs to be updated, I'll try to do it as soon as possible
  - You can download the compiled binary over at '[Release](https://github.com/34736384/genshin-fps-unlock/releases)' if you don't want to compile it yourself

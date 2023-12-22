@@ -33,6 +33,7 @@ namespace Unmanaged
 	bool SetupData();
 	bool ShowError(std::string apiName, DWORD code);
 	bool VerifyDLL(PVOID module);
+	void registerHDREntry();
 
 	DWORD GetPID(std::string ProcessName);
 	uintptr_t PatternScan(PVOID module, LPCSTR signature);

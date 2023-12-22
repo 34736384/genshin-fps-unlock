@@ -44,7 +44,7 @@ List<String^>^ Managed::TryResolveGamePath()
         for each (auto it in SubKeys)
         {
             auto SubKeyName = it;
-            if (!SubKeyName->Contains("Genshin Impact") && !SubKeyName->Contains(L"Ô­Éñ"))
+            if (!SubKeyName->Contains("Genshin Impact") && !SubKeyName->Contains(L"åŽŸç¥ž"))
                 continue;
 
             auto SubKey = Uninstall->OpenSubKey(SubKeyName);
@@ -115,6 +115,11 @@ bool Managed::StartGame(Settings^ settings)
         MessageBox::Show("An instance of the game is already running", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
         return false;
     }
+
+    if (settings->EnableHdr) {
+        Unmanaged::registerHDREntry();
+    }
+    
 
     String^ commandLine = "";
 

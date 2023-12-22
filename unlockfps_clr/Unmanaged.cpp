@@ -393,4 +393,30 @@ bool Unmanaged::VerifyDLL(PVOID module)
     return ntHeader->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64;
 }
 
+void Unmanaged::registerHDREntry()
+{
+    // define registry path and value name
+    HKEY hKey;
+    LPCWSTR regPath = L"SOFTWARE\\miHoYo\\原神";
+    LPCWSTR regValueName = L"WINDOWS_HDR_ON_h3132281285";
+
+    // open or create registry entry
+    LONG result = RegCreateKeyExW(HKEY_CURRENT_USER, regPath, 0, NULL, 0, KEY_WRITE, NULL, &hKey, NULL);
+    if (result == ERROR_SUCCESS) {
+        DWORD newValue = 1;
+        // set the registry value
+        result = RegSetValueExW(hKey, regValueName, 0, REG_DWORD, (BYTE*)&newValue, sizeof(newValue));
+        if (result != ERROR_SUCCESS) {
+            std::string message = "Failed to change HDR registry";
+            MessageBoxA(nullptr, message.c_str(), "Error", MB_OK | MB_ICONERROR);
+        }
+        // close registry
+        RegCloseKey(hKey);
+    }
+    else {
+        std::string message = "Failed to open or create HDR registry";
+        MessageBoxA(nullptr, message.c_str(), "Error", MB_OK | MB_ICONERROR);
+    }
+}
+
 #pragma managed

@@ -67,6 +67,8 @@ namespace unlockfpsclr {
 	private: System::Windows::Forms::ContextMenuStrip^ contextMenuNotify;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuExit;
 	private: System::Windows::Forms::ToolStripMenuItem^ menuItemAbout;
+	private: System::Windows::Forms::CheckBox^ ckbHDR;
+
 
 
 
@@ -115,6 +117,7 @@ namespace unlockfpsclr {
 			this->notifyIcon = (gcnew System::Windows::Forms::NotifyIcon(this->components));
 			this->contextMenuNotify = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->toolStripMenuExit = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->ckbHDR = (gcnew System::Windows::Forms::CheckBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tbFPS))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->inputFPS))->BeginInit();
 			this->menuStrip1->SuspendLayout();
@@ -123,9 +126,9 @@ namespace unlockfpsclr {
 			// 
 			// btnStartGame
 			// 
-			this->btnStartGame->Location = System::Drawing::Point(197, 80);
+			this->btnStartGame->Location = System::Drawing::Point(197, 95);
 			this->btnStartGame->Name = L"btnStartGame";
-			this->btnStartGame->Size = System::Drawing::Size(75, 23);
+			this->btnStartGame->Size = System::Drawing::Size(75, 21);
 			this->btnStartGame->TabIndex = 0;
 			this->btnStartGame->TabStop = false;
 			this->btnStartGame->Text = L"Start Game";
@@ -135,9 +138,9 @@ namespace unlockfpsclr {
 			// ckbAutoStart
 			// 
 			this->ckbAutoStart->AutoSize = true;
-			this->ckbAutoStart->Location = System::Drawing::Point(15, 84);
+			this->ckbAutoStart->Location = System::Drawing::Point(15, 100);
 			this->ckbAutoStart->Name = L"ckbAutoStart";
-			this->ckbAutoStart->Size = System::Drawing::Size(144, 17);
+			this->ckbAutoStart->Size = System::Drawing::Size(168, 16);
 			this->ckbAutoStart->TabIndex = 1;
 			this->ckbAutoStart->TabStop = false;
 			this->ckbAutoStart->Text = L"Start Game Automatically";
@@ -154,11 +157,11 @@ namespace unlockfpsclr {
 			// 
 			this->tbFPS->AutoSize = false;
 			this->tbFPS->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->tbFPS->Location = System::Drawing::Point(15, 57);
+			this->tbFPS->Location = System::Drawing::Point(15, 53);
 			this->tbFPS->Maximum = 360;
 			this->tbFPS->Minimum = 1;
 			this->tbFPS->Name = L"tbFPS";
-			this->tbFPS->Size = System::Drawing::Size(257, 21);
+			this->tbFPS->Size = System::Drawing::Size(257, 19);
 			this->tbFPS->TabIndex = 2;
 			this->tbFPS->TabStop = false;
 			this->tbFPS->TickStyle = System::Windows::Forms::TickStyle::None;
@@ -167,19 +170,19 @@ namespace unlockfpsclr {
 			// labelFPS
 			// 
 			this->labelFPS->AutoSize = true;
-			this->labelFPS->Location = System::Drawing::Point(12, 33);
+			this->labelFPS->Location = System::Drawing::Point(12, 30);
 			this->labelFPS->Name = L"labelFPS";
-			this->labelFPS->Size = System::Drawing::Size(33, 13);
+			this->labelFPS->Size = System::Drawing::Size(35, 12);
 			this->labelFPS->TabIndex = 3;
 			this->labelFPS->Text = L"FPS: ";
 			// 
 			// inputFPS
 			// 
-			this->inputFPS->Location = System::Drawing::Point(48, 31);
+			this->inputFPS->Location = System::Drawing::Point(48, 29);
 			this->inputFPS->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 360, 0, 0, 0 });
 			this->inputFPS->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			this->inputFPS->Name = L"inputFPS";
-			this->inputFPS->Size = System::Drawing::Size(224, 20);
+			this->inputFPS->Size = System::Drawing::Size(224, 21);
 			this->inputFPS->TabIndex = 4;
 			this->inputFPS->TabStop = false;
 			this->inputFPS->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 120, 0, 0, 0 });
@@ -189,7 +192,7 @@ namespace unlockfpsclr {
 			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripMenuItem });
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(284, 24);
+			this->menuStrip1->Size = System::Drawing::Size(284, 25);
 			this->menuStrip1->TabIndex = 5;
 			this->menuStrip1->Text = L"menuStrip1";
 			// 
@@ -200,27 +203,27 @@ namespace unlockfpsclr {
 					this->menuItemSetup, this->menuItemAbout
 			});
 			this->toolStripMenuItem->Name = L"toolStripMenuItem";
-			this->toolStripMenuItem->Size = System::Drawing::Size(61, 20);
+			this->toolStripMenuItem->Size = System::Drawing::Size(66, 21);
 			this->toolStripMenuItem->Text = L"Options";
 			// 
 			// menuItemSettings
 			// 
 			this->menuItemSettings->Name = L"menuItemSettings";
-			this->menuItemSettings->Size = System::Drawing::Size(116, 22);
+			this->menuItemSettings->Size = System::Drawing::Size(180, 22);
 			this->menuItemSettings->Text = L"Settings";
 			this->menuItemSettings->Click += gcnew System::EventHandler(this, &MainForm::settingsMenuItem_Click);
 			// 
 			// menuItemSetup
 			// 
 			this->menuItemSetup->Name = L"menuItemSetup";
-			this->menuItemSetup->Size = System::Drawing::Size(116, 22);
+			this->menuItemSetup->Size = System::Drawing::Size(180, 22);
 			this->menuItemSetup->Text = L"Setup";
 			this->menuItemSetup->Click += gcnew System::EventHandler(this, &MainForm::setupMenuItem_Click);
 			// 
 			// menuItemAbout
 			// 
 			this->menuItemAbout->Name = L"menuItemAbout";
-			this->menuItemAbout->Size = System::Drawing::Size(116, 22);
+			this->menuItemAbout->Size = System::Drawing::Size(180, 22);
 			this->menuItemAbout->Text = L"About";
 			this->menuItemAbout->Click += gcnew System::EventHandler(this, &MainForm::menuItemAbout_Click);
 			// 
@@ -244,20 +247,34 @@ namespace unlockfpsclr {
 			this->contextMenuNotify->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripMenuExit });
 			this->contextMenuNotify->Name = L"contextMenuNotify";
 			this->contextMenuNotify->ShowItemToolTips = false;
-			this->contextMenuNotify->Size = System::Drawing::Size(94, 26);
+			this->contextMenuNotify->Size = System::Drawing::Size(97, 26);
 			// 
 			// toolStripMenuExit
 			// 
 			this->toolStripMenuExit->Name = L"toolStripMenuExit";
-			this->toolStripMenuExit->Size = System::Drawing::Size(93, 22);
+			this->toolStripMenuExit->Size = System::Drawing::Size(96, 22);
 			this->toolStripMenuExit->Text = L"Exit";
 			this->toolStripMenuExit->Click += gcnew System::EventHandler(this, &MainForm::toolStripMenuExit_Click);
 			// 
+			// ckbHDR
+			// 
+			this->ckbHDR->AutoSize = true;
+			this->ckbHDR->Location = System::Drawing::Point(15, 78);
+			this->ckbHDR->Name = L"ckbHDR";
+			this->ckbHDR->Size = System::Drawing::Size(84, 16);
+			this->ckbHDR->TabIndex = 6;
+			this->ckbHDR->TabStop = false;
+			this->ckbHDR->Text = L"Enable HDR";
+			this->ttAutoStart->SetToolTip(this->ckbHDR, L"This will take effect on subsequent launch");
+			this->ckbHDR->UseVisualStyleBackColor = true;
+			this->ckbHDR->CheckedChanged += gcnew System::EventHandler(this, &MainForm::checkBox1_CheckedChanged);
+			// 
 			// MainForm
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
+			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(284, 115);
+			this->ClientSize = System::Drawing::Size(284, 126);
+			this->Controls->Add(this->ckbHDR);
 			this->Controls->Add(this->inputFPS);
 			this->Controls->Add(this->labelFPS);
 			this->Controls->Add(this->tbFPS);
@@ -292,5 +309,7 @@ namespace unlockfpsclr {
 	private: Void toolStripMenuExit_Click(Object^ sender, EventArgs^ e);
 	private: Void OnFormClosing(Object^ sender, FormClosingEventArgs^ e);
 	private: Void menuItemAbout_Click(Object^ sender, EventArgs^ e);
+private: System::Void checkBox1_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+}
 };
 }

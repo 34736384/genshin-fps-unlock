@@ -135,6 +135,7 @@ namespace unlockfpsclr
 		settings->FPSTarget = std::clamp(settings->FPSTarget, tbFPS->Minimum, tbFPS->Maximum); // sanitize
 
 		ckbAutoStart->DataBindings->Add("Checked", settings, "AutoStart");
+		ckbHDR->DataBindings->Add("Checked", settings, "EnableHdr");
 		tbFPS->DataBindings->Add("Value", settings, "FPSTarget", false, DataSourceUpdateMode::OnPropertyChanged);
 		inputFPS->DataBindings->Add("Value", settings, "FPSTarget", false, DataSourceUpdateMode::OnPropertyChanged);
 
