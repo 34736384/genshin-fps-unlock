@@ -395,24 +395,22 @@ bool Unmanaged::VerifyDLL(PVOID module)
 
 void Unmanaged::registerHDREntry()
 {
-    // 定义注册表路径和要修改的键名
+    // define registry path and value name
     HKEY hKey;
-    LPCWSTR regPath = L"SOFTWARE\\miHoYo\\原神";
+    LPCWSTR regPath = L"SOFTWARE\\miHoYo\\鍘熺";
     LPCWSTR regValueName = L"WINDOWS_HDR_ON_h3132281285";
 
-    // 打开或创建注册表项
+    // open or create registry entry
     LONG result = RegCreateKeyExW(HKEY_CURRENT_USER, regPath, 0, NULL, 0, KEY_WRITE, NULL, &hKey, NULL);
     if (result == ERROR_SUCCESS) {
-        // 设置要写入的新值
         DWORD newValue = 1;
-
-        // 写入注册表值
+        // set the registry value
         result = RegSetValueExW(hKey, regValueName, 0, REG_DWORD, (BYTE*)&newValue, sizeof(newValue));
         if (result != ERROR_SUCCESS) {
             std::string message = "Failed to change HDR registry";
             MessageBoxA(nullptr, message.c_str(), "Error", MB_OK | MB_ICONERROR);
         }
-        // 关闭注册表项
+        // close registry
         RegCloseKey(hKey);
     }
     else {
