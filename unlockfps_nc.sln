@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unlockfps_nc", "unlockfps_nc\unlockfps_nc.csproj", "{AB706C74-000D-4A43-909C-D0EE906003B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB706C74-000D-4A43-909C-D0EE906003B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB706C74-000D-4A43-909C-D0EE906003B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB706C74-000D-4A43-909C-D0EE906003B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB706C74-000D-4A43-909C-D0EE906003B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BA9973A2-2E7A-4D69-A824-D9A1B1CCF56E}
+	EndGlobalSection
+EndGlobal
