@@ -116,7 +116,7 @@ bool Managed::StartGame(Settings^ settings)
         return false;
     }
 
-    String^ commandLine = "";
+    String^ commandLine = String::Format("\"{0}\" ", settings->GamePath);
 
     if (settings->PopupWindow)
         commandLine += "-popupwindow ";
