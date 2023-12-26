@@ -6,6 +6,9 @@ namespace unlockfps_nc
 {
     public partial class MainForm : Form
     {
+        private Point _windowLocation;
+        private Size _windowSize;
+
         private readonly ConfigService _configService;
         private readonly Config _config;
         private readonly ProcessService _processService;
@@ -36,6 +39,8 @@ namespace unlockfps_nc
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            _windowLocation = Location;
+            _windowSize = Size;
             if (_config.AutoStart)
                 BtnStartGame_Click(null, null);
         }
@@ -94,6 +99,9 @@ namespace unlockfps_nc
             ShowInTaskbar = true;
             Show();
             Activate();
+
+            Location = _windowLocation;
+            Size = _windowSize;
         }
 
         private void AboutMenuItem_Click(object sender, EventArgs e)
