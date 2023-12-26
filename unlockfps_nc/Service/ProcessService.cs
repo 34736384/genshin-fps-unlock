@@ -169,14 +169,14 @@ namespace unlockfps_nc.Service
 
         private string BuildCommandLine()
         {
-            string commandLine = string.Empty;
+            string commandLine = $"{_config.GamePath} ";
             if (_config.PopupWindow)
                 commandLine += "-popupwindow ";
 
             if (_config.UseCustomRes)
                 commandLine += $"-screen-width {_config.CustomResX} -screen-height {_config.CustomResY} ";
 
-            commandLine += $"-screen-fullscreen {_config.Fullscreen} ";
+            commandLine += $"-screen-fullscreen {(_config.Fullscreen ? 1 : 0)} ";
             if (_config.Fullscreen)
                 commandLine += $"-window-mode {(_config.IsExclusiveFullscreen ? "exclusive" : "borderless")}";
 
