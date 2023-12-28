@@ -145,7 +145,7 @@
             NotifyIconMain.BalloonTipTitle = "FPS Unlcoker";
             NotifyIconMain.ContextMenuStrip = ContextNotify;
             NotifyIconMain.Icon = (Icon)resources.GetObject("NotifyIconMain.Icon");
-            NotifyIconMain.Text = "Hello";
+            NotifyIconMain.Text = "FPS Unlcoker";
             NotifyIconMain.Visible = true;
             NotifyIconMain.DoubleClick += NotifyIconMain_DoubleClick;
             // 

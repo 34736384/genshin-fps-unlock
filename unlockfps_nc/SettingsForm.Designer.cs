@@ -186,6 +186,7 @@
             CBUseMobileUI.TabIndex = 11;
             CBUseMobileUI.Text = "Use Mobile UI";
             CBUseMobileUI.UseVisualStyleBackColor = true;
+            CBUseMobileUI.CheckStateChanged += LaunchOptionsChanged;
             // 
             // InputMonitorNum
             // 
