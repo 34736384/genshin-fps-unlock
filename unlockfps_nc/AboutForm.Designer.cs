@@ -41,7 +41,7 @@
             LabelTitle.Name = "LabelTitle";
             LabelTitle.Size = new Size(320, 36);
             LabelTitle.TabIndex = 0;
-            LabelTitle.Text = "Genshin FPS Unlocker\r\nv3.0.0";
+            LabelTitle.Text = "Genshin FPS Unlocker\r\nv3.0.3";
             LabelTitle.TextAlign = ContentAlignment.TopCenter;
             // 
             // LabelDescription

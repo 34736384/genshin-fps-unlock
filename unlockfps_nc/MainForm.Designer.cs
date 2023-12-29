@@ -69,21 +69,21 @@
             // SettingsMenuItem
             // 
             SettingsMenuItem.Name = "SettingsMenuItem";
-            SettingsMenuItem.Size = new Size(180, 22);
+            SettingsMenuItem.Size = new Size(116, 22);
             SettingsMenuItem.Text = "Settings";
             SettingsMenuItem.Click += SettingsMenuItem_Click;
             // 
             // SetupMenuItem
             // 
             SetupMenuItem.Name = "SetupMenuItem";
-            SetupMenuItem.Size = new Size(180, 22);
+            SetupMenuItem.Size = new Size(116, 22);
             SetupMenuItem.Text = "Setup";
             SetupMenuItem.Click += SetupMenuItem_Click;
             // 
             // AboutMenuItem
             // 
             AboutMenuItem.Name = "AboutMenuItem";
-            AboutMenuItem.Size = new Size(180, 22);
+            AboutMenuItem.Size = new Size(116, 22);
             AboutMenuItem.Text = "About";
             AboutMenuItem.Click += AboutMenuItem_Click;
             // 
@@ -145,7 +145,7 @@
             NotifyIconMain.BalloonTipTitle = "FPS Unlcoker";
             NotifyIconMain.ContextMenuStrip = ContextNotify;
             NotifyIconMain.Icon = (Icon)resources.GetObject("NotifyIconMain.Icon");
-            NotifyIconMain.Text = "Hello";
+            NotifyIconMain.Text = "FPS Unlocker";
             NotifyIconMain.Visible = true;
             NotifyIconMain.DoubleClick += NotifyIconMain_DoubleClick;
             // 
