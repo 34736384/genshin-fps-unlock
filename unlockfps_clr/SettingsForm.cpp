@@ -87,4 +87,13 @@ namespace unlockfpsclr
         e->Value = Path::GetFileName(safe_cast<String^>(e->Value));
     }
 
+    Void SettingsForm::Settings_FormClosing(Object^ sender, FormClosingEventArgs^ e) {
+        if (e->CloseReason == CloseReason::UserClosing)
+        {
+            e->Cancel = true;
+            Hide();
+            settings->Save();
+        }
+    }
+
 }

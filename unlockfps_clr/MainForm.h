@@ -67,6 +67,8 @@ namespace unlockfpsclr {
 	private: System::Windows::Forms::ContextMenuStrip^ contextMenuNotify;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuExit;
 	private: System::Windows::Forms::ToolStripMenuItem^ menuItemAbout;
+	private: System::Windows::Forms::Button^ settingsBtn;
+
 
 
 
@@ -115,6 +117,7 @@ namespace unlockfpsclr {
 			this->notifyIcon = (gcnew System::Windows::Forms::NotifyIcon(this->components));
 			this->contextMenuNotify = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->toolStripMenuExit = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->settingsBtn = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tbFPS))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->inputFPS))->BeginInit();
 			this->menuStrip1->SuspendLayout();
@@ -253,11 +256,22 @@ namespace unlockfpsclr {
 			this->toolStripMenuExit->Text = L"Exit";
 			this->toolStripMenuExit->Click += gcnew System::EventHandler(this, &MainForm::toolStripMenuExit_Click);
 			// 
+			// settingsBtn
+			// 
+			this->settingsBtn->Location = System::Drawing::Point(197, 2);
+			this->settingsBtn->Name = L"settingsBtn";
+			this->settingsBtn->Size = System::Drawing::Size(75, 23);
+			this->settingsBtn->TabIndex = 6;
+			this->settingsBtn->Text = L"Settings";
+			this->settingsBtn->UseVisualStyleBackColor = true;
+			this->settingsBtn->Click += gcnew System::EventHandler(this, &MainForm::settings_Click);
+			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(284, 115);
+			this->Controls->Add(this->settingsBtn);
 			this->Controls->Add(this->inputFPS);
 			this->Controls->Add(this->labelFPS);
 			this->Controls->Add(this->tbFPS);
@@ -292,5 +306,8 @@ namespace unlockfpsclr {
 	private: Void toolStripMenuExit_Click(Object^ sender, EventArgs^ e);
 	private: Void OnFormClosing(Object^ sender, FormClosingEventArgs^ e);
 	private: Void menuItemAbout_Click(Object^ sender, EventArgs^ e);
+	private: System::Void settings_Click(System::Object^ sender, System::EventArgs^ e) {
+		this->settingsForm->Show();
+	}
 };
 }
