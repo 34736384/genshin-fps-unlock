@@ -44,6 +44,7 @@ namespace unlockfpsclr {
 
 			this->settings = settings;
 			this->Load += gcnew EventHandler(this, &SettingsForm::OnLoad);
+			this->FormClosing += gcnew FormClosingEventHandler(this, &SettingsForm::Settings_FormClosing);
 			this->FormClosing += gcnew FormClosingEventHandler(this, &SettingsForm::UpdateSettings);
 		}
 
@@ -487,5 +488,6 @@ namespace unlockfpsclr {
 	private: Void OnLoad(Object^ sender, EventArgs^ e);
 	private: Void btnDllAdd_Click(Object^ sender, EventArgs^ e);
 	private: Void OnFormat(Object^ sender, ListControlConvertEventArgs^ e);
+	private: Void Settings_FormClosing(Object^ sender, FormClosingEventArgs^ e);
 	};
 }
