@@ -26,8 +26,7 @@ namespace unlockfps_nc
 
         private void SettingsMenuItem_Click(object sender, EventArgs e)
         {
-            var settingsForm = Program.ServiceProvider.GetRequiredService<SettingsForm>();
-            settingsForm.ShowDialog();
+            ShowSettingsForm();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -108,6 +107,17 @@ namespace unlockfps_nc
         {
             var aboutForm = new AboutForm();
             aboutForm.ShowDialog();
+        }
+
+        private void SettingsBtn_Click(object sender, EventArgs e)
+        {
+            ShowSettingsForm();
+        }
+
+        private void ShowSettingsForm()
+        {
+            var settingsForm = Program.ServiceProvider.GetRequiredService<SettingsForm>();
+            settingsForm.ShowDialog();
         }
     }
 }

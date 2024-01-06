@@ -44,6 +44,7 @@
             NotifyIconMain = new NotifyIcon(components);
             ContextNotify = new ContextMenuStrip(components);
             ExitMenuItem = new ToolStripMenuItem();
+            SettingsBtn = new Button();
             OptionsMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)InputFPS).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SliderFPS).BeginInit();
@@ -122,15 +123,15 @@
             CBAutoStart.AutoSize = true;
             CBAutoStart.Location = new Point(12, 90);
             CBAutoStart.Name = "CBAutoStart";
-            CBAutoStart.Size = new Size(161, 19);
+            CBAutoStart.Size = new Size(113, 19);
             CBAutoStart.TabIndex = 4;
-            CBAutoStart.Text = "Start Game Automatically";
+            CBAutoStart.Text = "Auto Start Game";
             ToolTipMain.SetToolTip(CBAutoStart, "This will take effect on subsequent launch");
             CBAutoStart.UseVisualStyleBackColor = true;
             // 
             // BtnStartGame
             // 
-            BtnStartGame.Location = new Point(197, 86);
+            BtnStartGame.Location = new Point(197, 89);
             BtnStartGame.Name = "BtnStartGame";
             BtnStartGame.Size = new Size(75, 23);
             BtnStartGame.TabIndex = 5;
@@ -162,11 +163,22 @@
             ExitMenuItem.Text = "Exit";
             ExitMenuItem.Click += ExitMenuItem_Click;
             // 
+            // SettingsBtn
+            // 
+            SettingsBtn.Location = new Point(131, 89);
+            SettingsBtn.Name = "SettingsBtn";
+            SettingsBtn.Size = new Size(63, 23);
+            SettingsBtn.TabIndex = 6;
+            SettingsBtn.Text = "Settings";
+            SettingsBtn.UseVisualStyleBackColor = true;
+            SettingsBtn.Click += SettingsBtn_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(284, 121);
+            Controls.Add(SettingsBtn);
             Controls.Add(BtnStartGame);
             Controls.Add(CBAutoStart);
             Controls.Add(SliderFPS);
@@ -209,5 +221,6 @@
         private ContextMenuStrip ContextNotify;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem ExitMenuItem;
+        private Button SettingsBtn;
     }
 }
