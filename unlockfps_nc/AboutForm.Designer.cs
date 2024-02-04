@@ -32,6 +32,7 @@
             LabelDescription = new Label();
             LinkLabelSource = new LinkLabel();
             LinkLabelIssues = new LinkLabel();
+            giteelinkLabel = new LinkLabel();
             SuspendLayout();
             // 
             // LabelTitle
@@ -78,16 +79,34 @@
             LinkLabelIssues.TextAlign = ContentAlignment.MiddleCenter;
             LinkLabelIssues.UseCompatibleTextRendering = true;
             LinkLabelIssues.LinkClicked += LinkLabelIssues_LinkClicked;
+
+            // 
+            // giteelinkLabel
+            // 
+            giteelinkLabel.LinkArea = new LinkArea(17, 80);
+            giteelinkLabel.Location = new Point(12, 195);
+            giteelinkLabel.Name = "giteelinkLabel";
+            giteelinkLabel.Size = new Size(300, 67);
+            giteelinkLabel.TabIndex = 4;
+            giteelinkLabel.TabStop = true;
+            giteelinkLabel.Text = "此软件基于上述项目修改\r\n新版检测：https://gitee.com/zhouchengang/genshin-fps-unlock/releases";
+            giteelinkLabel.TextAlign =  ContentAlignment.MiddleCenter;
+            giteelinkLabel.UseCompatibleTextRendering = true;
+            giteelinkLabel.LinkClicked +=  linkLabelgitee_LinkClicked;
+
+
+
             // 
             // AboutForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(344, 171);
+            ClientSize = new Size(344, 280);
             Controls.Add(LinkLabelIssues);
             Controls.Add(LinkLabelSource);
             Controls.Add(LabelDescription);
             Controls.Add(LabelTitle);
+            Controls.Add(giteelinkLabel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
@@ -103,5 +122,6 @@
         private Label LabelDescription;
         private LinkLabel LinkLabelSource;
         private LinkLabel LinkLabelIssues;
+        private LinkLabel giteelinkLabel;
     }
 }

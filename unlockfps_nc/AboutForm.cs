@@ -27,6 +27,10 @@ namespace unlockfps_nc
         {
             OpenLink("https://github.com/34736384/genshin-fps-unlock/issues");
         }
+        private void linkLabelgitee_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            OpenLink("https://gitee.com/zhouchengang/genshin-fps-unlock/releases");
+        }
 
         private void OpenLink(string url)
         {

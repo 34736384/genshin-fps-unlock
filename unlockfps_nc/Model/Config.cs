@@ -14,6 +14,17 @@ namespace unlockfps_nc.Model
         public bool AutoClose { get; set; }
         public bool PopupWindow { get; set; }
         public bool Fullscreen { get; set; } = true;
+
+        public int hotkeyP { get; set; } = 0;
+        public int hotkeyH { get; set; } = 0;
+        public int hotkeyS { get; set; } = 0;
+        public int valueP { get; set; } = 1;
+        public int valueH { get; set; } = 2;
+        public int valueS { get; set; } = 3;
+        public int valueM { get; set; } = 5;
+        public int valueN { get; set; } = 2;
+        public int neuvilletteSpinPixels { get; set; } = 15000;
+         
         public bool UseCustomRes { get; set; }
         public bool IsExclusiveFullscreen { get; set; }
         public bool StartMinimized { get; set; }

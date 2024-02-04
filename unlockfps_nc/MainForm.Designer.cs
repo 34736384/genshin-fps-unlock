@@ -44,9 +44,41 @@
             NotifyIconMain = new NotifyIcon(components);
             ContextNotify = new ContextMenuStrip(components);
             ExitMenuItem = new ToolStripMenuItem();
-            OptionsMenuStrip.SuspendLayout();
+
+            comboWindowHotKeyP = new ComboBox();
+            comboWindowHotKeyPTip = new ToolTip();
+            labelPlusP = new Label();
+            comboWindowP = new ComboBox();
+
+            comboWindowHotKeyH = new ComboBox();
+            comboWindowHotKeyHTip = new ToolTip();
+            labelPlusH = new Label();
+            comboWindowH = new ComboBox();
+
+            comboWindowHotKeyS = new ComboBox();
+            comboWindowHotKeySTip = new ToolTip();
+            labelPlusS = new Label();
+            comboWindowS = new ComboBox();
+
+
+
+            comboWindowHotKeyMTip = new ToolTip();
+            labelPlusM = new Label();
+            comboWindowM = new ComboBox();
+
+            comboWindowHotKeyNTip = new ToolTip();
+            labelPlusN = new Label();
+            comboWindowN = new ComboBox();
+
+
+            neuvilletteSpinPixelsTip = new Label();
+            inputNeuvilletteSpinPixels = new NumericUpDown();
+             
+
+        OptionsMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)InputFPS).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SliderFPS).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)inputNeuvilletteSpinPixels).BeginInit();
             ContextNotify.SuspendLayout();
             SuspendLayout();
             // 
@@ -127,10 +159,199 @@
             CBAutoStart.Text = "Start Game Automatically";
             ToolTipMain.SetToolTip(CBAutoStart, "This will take effect on subsequent launch");
             CBAutoStart.UseVisualStyleBackColor = true;
+
+
+
+ 
+
+
+            
+            // 
+            // comboWindowHotKeyP
+            // 
+            comboWindowHotKeyP.DropDownStyle =ComboBoxStyle.DropDownList;
+            comboWindowHotKeyP.FormattingEnabled = true;
+            comboWindowHotKeyP.Items.AddRange(new object[]{ "ALT","CTRL" });
+            comboWindowHotKeyP.Location = new Point(15, 120);
+            comboWindowHotKeyP.Name = "comboWindowHotKey";
+            comboWindowHotKeyP.Size = new Size(50, 21);
+            comboWindowHotKeyP.TabStop = false;
+            comboWindowHotKeyPTip.SetToolTip(comboWindowHotKeyP, "ALT\r\nCTRL");
+         
+            // comboWindowHotKeyPTip
+            // 
+            comboWindowHotKeyPTip.AutoPopDelay = 5000;
+            comboWindowHotKeyPTip.InitialDelay = 1;
+            comboWindowHotKeyPTip.ReshowDelay = 100;
+            // 
+            // labelPlusP
+            // 
+            labelPlusP.AutoSize = true;
+            labelPlusP.Location = new Point(70, 125);
+            labelPlusP.Name =  "labelPlusP";
+            labelPlusP.Size = new Size(33, 13);
+            labelPlusP.Text =  "+ P    => ";
+            // 
+            // comboWindowP
+            // 
+            comboWindowP.DropDownStyle =ComboBoxStyle.DropDownList;
+            comboWindowP.FormattingEnabled = true;
+            comboWindowP.Items.AddRange(items);
+            comboWindowP.Location = new Point(135, 120);
+            comboWindowP.Name = "comboWindowP";
+            comboWindowP.Size = new Size(140, 21);
+            comboWindowP.TabStop = false;
+
+            
+            // 
+            // comboWindowHotKeyH
+            // 
+            comboWindowHotKeyH.DropDownStyle =  ComboBoxStyle.DropDownList;
+            comboWindowHotKeyH.FormattingEnabled = true;
+            comboWindowHotKeyH.Items.AddRange(new object[]{ "ALT", "CTRL" });
+            comboWindowHotKeyH.Location = new Point(15, 155);
+            comboWindowHotKeyH.Name = "comboWindowHotKeyH";
+            comboWindowHotKeyH.Size = new Size(50, 21);
+            comboWindowHotKeyH.TabStop = false;
+            comboWindowHotKeyHTip.SetToolTip(comboWindowHotKeyH, "ALT\r\nCTRL");
+            // comboWindowHotKeyHTip
+            // 
+            comboWindowHotKeyHTip.AutoPopDelay = 5000;
+            comboWindowHotKeyHTip.InitialDelay = 1;
+            comboWindowHotKeyHTip.ReshowDelay = 100;
+            // 
+            // labelPlusH
+            // 
+            labelPlusH.AutoSize = true;
+            labelPlusH.Location = new Point(70, 160);
+            labelPlusH.Name = "labelPlusH";
+            labelPlusH.Size = new Size(33, 13);
+            labelPlusH.Text = "+ H    => ";
+            // 
+            // comboWindowH
+            // 
+            comboWindowH.DropDownStyle =  ComboBoxStyle.DropDownList;
+            comboWindowH.FormattingEnabled = true;
+            comboWindowH.Items.AddRange(items);
+            comboWindowH.Location = new Point(135, 155);
+            comboWindowH.Name = "comboWindowH";
+            comboWindowH.Size = new Size(140, 21);
+            comboWindowH.TabStop = false;
+
+
+            // 
+            // comboWindowHotKeyS
+            // 
+            comboWindowHotKeyS.DropDownStyle =  ComboBoxStyle.DropDownList;
+            comboWindowHotKeyS.FormattingEnabled = true;
+            comboWindowHotKeyS.Items.AddRange(new object[] { "ALT", "CTRL" });
+            comboWindowHotKeyS.Location = new Point(15, 190);
+            comboWindowHotKeyS.Name = "comboWindowHotKeyS";
+            comboWindowHotKeyS.Size = new Size(50, 21);
+            comboWindowHotKeyS.TabStop = false;
+            comboWindowHotKeySTip.SetToolTip(comboWindowHotKeyS, "ALT\r\nCTRL");
+            // comboWindowHotKeySTip
+            // 
+            comboWindowHotKeySTip.AutoPopDelay = 5000;
+            comboWindowHotKeySTip.InitialDelay = 1;
+            comboWindowHotKeySTip.ReshowDelay = 100;
+            // 
+            // labelPlusS
+            // 
+            labelPlusS.AutoSize = true;
+            labelPlusS.Location = new Point(70, 195);
+            labelPlusS.Name = "labelPlusS";
+            labelPlusS.Size = new Size(33, 13);
+            labelPlusS.Text = "+ 空格 => ";
+            // 
+            // comboWindowS
+            // 
+            comboWindowS.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboWindowS.FormattingEnabled = true;
+            comboWindowS.Items.AddRange(items);
+            comboWindowS.Location = new Point(135, 190);
+            comboWindowS.Name = "comboWindowS";
+            comboWindowS.Size = new Size(140, 21);
+            comboWindowS.TabStop = false;
+
+            
+            // comboWindowHotKeyMTip
+            // 
+            comboWindowHotKeyMTip.AutoPopDelay = 5000;
+            comboWindowHotKeyMTip.InitialDelay = 1;
+            comboWindowHotKeyMTip.ReshowDelay = 100;
+            // 
+            // labelPlusM
+            // 
+            labelPlusM.AutoSize = true;
+            labelPlusM.Location = new Point(15, 230);
+            labelPlusM.Name = "labelPlusM";
+            labelPlusM.Size = new Size(33, 13);
+            labelPlusM.Text = "侧键前进=>";
+            // 
+            // comboWindowM
+            // 
+            comboWindowM.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboWindowM.FormattingEnabled = true;
+            comboWindowM.Items.AddRange(items);
+            comboWindowM.Location = new Point(90, 228);
+            comboWindowM.Name = "comboWindowM";
+            comboWindowM.Size = new Size(180, 21);
+            comboWindowM.TabStop = false;
+
+            // comboWindowHotKeyNTip
+            // 
+            comboWindowHotKeyNTip.AutoPopDelay = 5000;
+            comboWindowHotKeyNTip.InitialDelay = 1;
+            comboWindowHotKeyNTip.ReshowDelay = 100;
+            // 
+            // labelPlusN
+            // 
+            labelPlusN.AutoSize = true;
+            labelPlusN.Location = new Point(15, 265);
+            labelPlusN.Name = "labelPlusM";
+            labelPlusN.Size = new Size(33, 13);
+            labelPlusN.Text = "侧键后退=>";
+            // 
+            // comboWindowN
+            // 
+            comboWindowN.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboWindowN.FormattingEnabled = true;
+            comboWindowN.Items.AddRange(items);
+            comboWindowN.Location = new Point(90, 263);
+            comboWindowN.Name = "comboWindowM";
+            comboWindowN.Size = new Size(180, 21);
+            comboWindowN.TabStop = false;
+
+            
+            // 
+            // neuvilletteSpinPixelsTip
+            // 
+            neuvilletteSpinPixelsTip.AutoSize = true;
+            neuvilletteSpinPixelsTip.Location = new Point(15, 300);
+            neuvilletteSpinPixelsTip.Name = "neuvilletteSpinPixelsTip";
+            neuvilletteSpinPixelsTip.Size = new Size(33, 13);
+            neuvilletteSpinPixelsTip.Text = "那维莱特旋转摆幅";
+            // 
+            // inputNeuvilletteSpinPixels
+            // 
+            inputNeuvilletteSpinPixels.Location = new Point(125, 295);
+            inputNeuvilletteSpinPixels.Maximum = new decimal(new int[] { 30000, 0, 0, 0 });
+            inputNeuvilletteSpinPixels.Minimum = new decimal(new int[] { 300, 0, 0, 0 });
+            inputNeuvilletteSpinPixels.Name = "inputNeuvilletteSpinPixels";
+            inputNeuvilletteSpinPixels.Size = new Size(60, 20);
+            inputNeuvilletteSpinPixels.TabIndex = 4;
+            inputNeuvilletteSpinPixels.TabStop = false;
+            inputNeuvilletteSpinPixels.Value = new decimal(new int[] { 15000, 0, 0, 0 });
+
+             
+
+
+
             // 
             // BtnStartGame
             // 
-            BtnStartGame.Location = new Point(197, 86);
+            BtnStartGame.Location = new Point(197, 295);
             BtnStartGame.Name = "BtnStartGame";
             BtnStartGame.Size = new Size(75, 23);
             BtnStartGame.TabIndex = 5;
@@ -166,7 +387,38 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(284, 121);
+            ClientSize = new Size(284, 341);
+
+            Controls.Add(comboWindowHotKeyP);
+            //Controls.Add(comboWindowHotKeyPTip);
+            Controls.Add(labelPlusP);
+            Controls.Add(comboWindowP);
+
+
+            Controls.Add(comboWindowHotKeyH);
+            //Controls.Add(comboWindowHotKeyHTip);
+            Controls.Add(labelPlusH);
+            Controls.Add(comboWindowH);
+
+
+            Controls.Add(comboWindowHotKeyS);
+            //Controls.Add(comboWindowHotKeySTip);
+            Controls.Add(labelPlusS);
+            Controls.Add(comboWindowS);
+
+
+            //Controls.Add(comboWindowHotKeyMTip);
+            Controls.Add(labelPlusM);
+            Controls.Add(comboWindowM);
+            //Controls.Add(comboWindowHotKeyNTip);
+            Controls.Add(labelPlusN);
+            Controls.Add(comboWindowN);
+            Controls.Add(neuvilletteSpinPixelsTip);
+            Controls.Add(inputNeuvilletteSpinPixels);
+
+              
+
+
             Controls.Add(BtnStartGame);
             Controls.Add(CBAutoStart);
             Controls.Add(SliderFPS);
@@ -187,6 +439,7 @@
             OptionsMenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)InputFPS).EndInit();
             ((System.ComponentModel.ISupportInitialize)SliderFPS).EndInit();
+            ((System.ComponentModel.ISupportInitialize)inputNeuvilletteSpinPixels).EndInit();
             ContextNotify.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -209,5 +462,44 @@
         private ContextMenuStrip ContextNotify;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem ExitMenuItem;
+
+        private ComboBox comboWindowHotKeyP;
+        private ToolTip comboWindowHotKeyPTip;
+        private Label labelPlusP;
+        private ComboBox comboWindowP;
+
+        private ComboBox comboWindowHotKeyH;
+        private ToolTip comboWindowHotKeyHTip;
+        private Label labelPlusH;
+        private ComboBox comboWindowH;
+
+        private ComboBox comboWindowHotKeyS;
+        private ToolTip comboWindowHotKeySTip;
+        private Label labelPlusS;
+        private ComboBox comboWindowS;
+
+        private ToolTip comboWindowHotKeyMTip;
+        private Label labelPlusM;
+        private ComboBox comboWindowM;
+
+        private ToolTip comboWindowHotKeyNTip;
+        private Label labelPlusN;
+        private ComboBox comboWindowN;
+
+        private Label neuvilletteSpinPixelsTip;
+        private NumericUpDown inputNeuvilletteSpinPixels;
+
+
+        private object[] items = {
+            "无",
+            "快速强化圣遗物/武器",
+            "胡桃10AAZ【推荐1命】",
+            "快速点剧情",
+            "那维莱特无前摇重击",
+            "那维莱特一键重击转圈", 
+            "胡桃10AZ跳【推荐0命】", 
+            "胡桃8AAZ跳【推荐0命】", 
+            "胡桃11AAZ【1命120帧】"
+            }; 
     }
 }

@@ -10,7 +10,7 @@ namespace unlockfps_nc.Service
 {
     public class ConfigService
     {
-        private const string ConfigName = "fps_config.json";
+        public  static string ConfigName = "fps_config_z.json";
 
         public Config Config { get; private set; } = new();
 
