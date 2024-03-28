@@ -29,6 +29,7 @@ namespace unlockfps_nc.Service
         private IntPtr _gameHandle = IntPtr.Zero;
         private IntPtr _remoteUnityPlayer = IntPtr.Zero;
         private IntPtr _remoteUserAssembly = IntPtr.Zero;
+        private IntPtr _unityWnd = IntPtr.Zero;
         private int _gamePid = 0;
         private bool _gameInForeground = true;
 
@@ -91,6 +92,13 @@ namespace unlockfps_nc.Service
 
             Native.GetWindowThreadProcessId(hWnd, out var pid);
             _gameInForeground = pid == _gamePid;
+
+            if (_gameInForeground && _unityWnd == IntPtr.Zero)
+            {
+                _unityWnd = hWnd;
+                if (_config.PopupWindow && _config.UseCustomRes && _config.CustomMoveX > -1 && _config.CustomMoveY > -1)
+                    Native.MoveWindow(_unityWnd, _config.CustomMoveX, _config.CustomMoveY, _config.CustomResX, _config.CustomResY, true);
+            }
 
             ApplyFpsLimit();
 
