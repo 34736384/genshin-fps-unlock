@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -86,6 +86,9 @@ namespace unlockfps_nc.Utility
 
         [DllImport("kernel32.dll")]
         public static extern bool SetPriorityClass(IntPtr hProcess, uint dwPriorityClass);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool IsBadReadPtr(IntPtr lp, UIntPtr ucb);
 
         [DllImport("psapi.dll", SetLastError = true)]
         public static extern bool EnumProcessModules(IntPtr hProcess, [Out] IntPtr[] lphModule, uint cb, out uint lpcbNeeded);

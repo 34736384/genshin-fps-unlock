@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.PortableExecutable;
@@ -89,6 +89,11 @@ namespace unlockfps_nc.Utility
 
             for (var i = 0U; i < sizeOfImage - s; i++)
             {
+                if (Native.IsBadReadPtr((IntPtr) (module.ToInt64() + i), (UIntPtr) s))
+                {
+                    continue;
+                }
+
                 var found = true;
                 for (var j = 0; j < s; j++)
                 {
