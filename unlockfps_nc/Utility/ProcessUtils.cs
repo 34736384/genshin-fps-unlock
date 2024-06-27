@@ -87,6 +87,16 @@ namespace unlockfps_nc.Utility
             var s = patternBytes.Length;
             var d = patternBytes;
 
+            if (Native.IsWine())
+            {
+                /*
+                 *  Fixes a problem with LoadLibraryEx not working properly on Wine.
+                 *  When the flag 'LOAD_LIBRARY_AS_IMAGE_RESOURCE' is used, it is supposed to map the entire file as READONLY.
+                 *  But Wine maps each section with the respective protection, and if there is a section with no read permission, it will trigger Access Violation.
+                */
+                Native.VirtualProtect(module, sizeOfImage, MemoryProtection.EXECUTE_READWRITE, out _);
+            }
+
             for (var i = 0U; i < sizeOfImage - s; i++)
             {
                 var found = true;
@@ -108,12 +118,18 @@ namespace unlockfps_nc.Utility
 
         public static IntPtr GetModuleBase(IntPtr hProcess, string moduleName)
         {
+            var moduleNameLower = moduleName.ToLowerInvariant();
             var modules = new IntPtr[1024];
 
-            if (!Native.EnumProcessModules(hProcess, modules, (uint)(modules.Length * IntPtr.Size), out var bytesNeeded))
+            if (!Native.EnumProcessModulesEx(hProcess, modules, (uint)(modules.Length * IntPtr.Size), out var bytesNeeded, 2))
             {
-                if (Marshal.GetLastWin32Error() != 299)
+                var errorCode = Marshal.GetLastWin32Error();
+                if (errorCode != 299)
+                {
+                    MessageBox.Show($@"EnumProcessModulesEx failed ({errorCode}){Environment.NewLine}{Marshal.GetLastPInvokeErrorMessage()}"
+                        , @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return IntPtr.Zero;
+                }
             }
 
             foreach (var module in modules.Where(x => x != IntPtr.Zero))
@@ -122,7 +138,7 @@ namespace unlockfps_nc.Utility
                 if (Native.GetModuleBaseName(hProcess, module, sb, (uint)sb.Capacity) == 0)
                     continue;
 
-                if (sb.ToString() != moduleName)
+                if (sb.ToString().ToLowerInvariant() != moduleNameLower)
                     continue;
 
                 if (!Native.GetModuleInformation(hProcess, module, out var moduleInfo, (uint)Marshal.SizeOf<MODULEINFO>()))

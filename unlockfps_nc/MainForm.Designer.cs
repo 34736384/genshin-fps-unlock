@@ -142,7 +142,7 @@
             // 
             NotifyIconMain.BalloonTipIcon = ToolTipIcon.Info;
             NotifyIconMain.BalloonTipText = "Minimized to tray";
-            NotifyIconMain.BalloonTipTitle = "FPS Unlcoker";
+            NotifyIconMain.BalloonTipTitle = "FPS Unlocker";
             NotifyIconMain.ContextMenuStrip = ContextNotify;
             NotifyIconMain.Icon = (Icon)resources.GetObject("NotifyIconMain.Icon");
             NotifyIconMain.Text = "FPS Unlocker";

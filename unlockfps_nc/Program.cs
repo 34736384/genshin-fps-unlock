@@ -13,6 +13,12 @@ namespace unlockfps_nc
         [STAThread]
         static void Main()
         {
+            if (File.Exists("YuanShen.exe") || File.Exists("GenshinImpact.exe"))
+            {
+                MessageBox.Show(@"Do not place the unlocker in the game folder.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             MutexHandle = Native.CreateMutex(IntPtr.Zero, true, @"GenshinFPSUnlocker");
             if (Marshal.GetLastWin32Error() == 183)
             {

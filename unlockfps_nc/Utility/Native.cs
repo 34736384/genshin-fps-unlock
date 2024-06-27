@@ -71,7 +71,10 @@ namespace unlockfps_nc.Utility
         
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint dwFreeType);
-        
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, uint flNewProtect, out uint lpflOldProtect);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
 
@@ -83,7 +86,10 @@ namespace unlockfps_nc.Utility
 
         [DllImport("kernel32.dll")]
         public static extern void FreeLibrary(IntPtr handle);
-        
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
+
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
 
@@ -93,6 +99,9 @@ namespace unlockfps_nc.Utility
         [DllImport("psapi.dll", SetLastError = true)]
         public static extern bool EnumProcessModules(IntPtr hProcess, [Out] IntPtr[] lphModule, uint cb, out uint lpcbNeeded);
 
+        [DllImport("psapi.dll", SetLastError = true)]
+        public static extern bool EnumProcessModulesEx(IntPtr hProcess, [Out] IntPtr[] lphModule, uint cb, out uint lpcbNeeded, uint dwFilterFlag);
+
         [DllImport("psapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern uint GetModuleBaseName(IntPtr hProcess, IntPtr hModule, StringBuilder lpBaseName, uint nSize);
 
@@ -101,20 +110,28 @@ namespace unlockfps_nc.Utility
 
         [DllImport("ntdll.dll")]
         public static extern uint RtlAdjustPrivilege(uint Privilege, bool bEnablePrivilege, bool IsThreadPrivilege, out bool PreviousValue);
+
+        public static bool IsWine()
+        {
+            var ntdll = GetModuleHandle("ntdll.dll");
+            var ver = GetProcAddress(ntdll, "wine_get_version");
+
+            return ver != 0;
+        }
     }
 
     internal class ModuleGuard(IntPtr module) : IDisposable
     {
-        public IntPtr BaseAddress { get; private set; } = module;
+        public IntPtr BaseAddress { get => module & ~3; }
 
-        public static implicit operator ModuleGuard(IntPtr module) => new(module & ~3);
+        public static implicit operator ModuleGuard(IntPtr module) => new(module);
         public static implicit operator IntPtr(ModuleGuard guard) => guard.BaseAddress;
         public static implicit operator bool(ModuleGuard guard) => guard.BaseAddress != IntPtr.Zero;
 
         public void Dispose()
         {
             if (this)
-                Native.FreeLibrary(BaseAddress);
+                Native.FreeLibrary(module);
         }
     }
 

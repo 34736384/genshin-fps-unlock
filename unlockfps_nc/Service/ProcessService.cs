@@ -29,7 +29,6 @@ namespace unlockfps_nc.Service
         private IntPtr _gameHandle = IntPtr.Zero;
         private IntPtr _remoteUnityPlayer = IntPtr.Zero;
         private IntPtr _remoteUserAssembly = IntPtr.Zero;
-        private IntPtr _unityWnd = IntPtr.Zero;
         private int _gamePid = 0;
         private bool _gameInForeground = true;
 
@@ -59,6 +58,12 @@ namespace unlockfps_nc.Service
 
         public bool Start()
         {
+            if (!File.Exists(_config.GamePath))
+            {
+                MessageBox.Show(@"Game path is invalid.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
             if (IsGameRunning())
             {
                 MessageBox.Show(@"An instance of the game is already running.", @"Error", MessageBoxButtons.OK,
@@ -93,6 +98,9 @@ namespace unlockfps_nc.Service
             Native.GetWindowThreadProcessId(hWnd, out var pid);
             _gameInForeground = pid == _gamePid;
 
+            if (_gameHandle == IntPtr.Zero)
+                return;
+
             if (_gameInForeground && _unityWnd == IntPtr.Zero)
             {
                 _unityWnd = hWnd;
@@ -114,7 +122,9 @@ namespace unlockfps_nc.Service
             if (_gameHandle == IntPtr.Zero)
                 return false;
 
-            Native.GetExitCodeProcess(_gameHandle, out var exitCode);
+            if (!Native.GetExitCodeProcess(_gameHandle, out var exitCode))
+                return false;
+
             return exitCode == 259;
         }
 
@@ -141,7 +151,7 @@ namespace unlockfps_nc.Service
 
             if (_config.SuspendLoad)
                 Native.ResumeThread(pi.hThread);
-            
+
             _gamePid = pi.dwProcessId;
             _gameHandle = pi.hProcess;
 
@@ -161,7 +171,7 @@ namespace unlockfps_nc.Service
 
             if (!IsGameRunning() && _config.AutoClose)
             {
-                Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
                     await Task.Delay(2000);
                     Application.Exit();
