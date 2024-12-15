@@ -32,29 +32,35 @@ namespace unlockfps_nc.Service
 
         public bool StartGame()
         {
-            if (!File.Exists(_config.GamePath)) {
+            if (!File.Exists(_config.GamePath))
+            {
                 MessageBox.Show(@"Game path is invalid.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-            if (IsGameRunning()) {
+            if (IsGameRunning())
+            {
                 MessageBox.Show(@"An instance of the game is already running.", @"Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return false;
             }
 
-            if (_gameHandle != IntPtr.Zero) {
+            if (_gameHandle != IntPtr.Zero)
+            {
                 Native.CloseHandle(_gameHandle);
                 _gameHandle = IntPtr.Zero;
             }
 
-            if (_config.UseHDR) {
+            if (_config.UseHDR)
+            {
                 var subKeyName = Path.GetFileName(_config.GamePath) == "YuanShen.exe" ? "原神" : "Genshin Impact";
-                try {
+                try
+                {
                     using var key = Registry.CurrentUser.CreateSubKey($@"Software\miHoYo\{subKeyName}");
                     key.SetValue("WINDOWS_HDR_ON_h3132281285", 1);
                 }
-                catch(Exception e) {
+                catch (Exception e)
+                {
                     MessageBox.Show($@"Failed to enable HDR: {e.Message}", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -63,14 +69,16 @@ namespace unlockfps_nc.Service
             uint creationFlag = _config.SuspendLoad ? 4u : 0u;
             var gameFolder = Path.GetDirectoryName(_config.GamePath);
 
-            if (!Native.CreateProcess(_config.GamePath, BuildCommandLine(), IntPtr.Zero, IntPtr.Zero, false, creationFlag, IntPtr.Zero, gameFolder, ref si, out var pi)) {
+            if (!Native.CreateProcess(_config.GamePath, BuildCommandLine(), IntPtr.Zero, IntPtr.Zero, false, creationFlag, IntPtr.Zero, gameFolder, ref si, out var pi))
+            {
                 MessageBox.Show(
                     $@"CreateProcess failed ({Marshal.GetLastWin32Error()}){Environment.NewLine} {Marshal.GetLastPInvokeErrorMessage()}",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-            if (!ProcessUtils.InjectDlls(pi.hProcess, _config.DllList)) {
+            if (!ProcessUtils.InjectDlls(pi.hProcess, _config.DllList))
+            {
                 MessageBox.Show(
                     $@"Dll Injection failed ({Marshal.GetLastWin32Error()}){Environment.NewLine} {Marshal.GetLastPInvokeErrorMessage()}",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -105,7 +113,8 @@ namespace unlockfps_nc.Service
 
         private async Task UnlockerPoll()
         {
-            while (!_cts.IsCancellationRequested) {
+            while (!_cts.IsCancellationRequested)
+            {
 
                 await Task.Delay(1000, _cts.Token);
                 using var process = Process.GetProcesses()
@@ -119,12 +128,14 @@ namespace unlockfps_nc.Service
                 if (!_ipcService.Start(process.Id))
                     return;
 
-                while (!process.HasExited && !_cts.IsCancellationRequested) {
+                while (!process.HasExited && !_cts.IsCancellationRequested)
+                {
                     _ipcService.Update();
                     await Task.Delay(62, _cts.Token);
                 }
 
-                if (_gameHandle != IntPtr.Zero && _config.AutoClose) {
+                if (_gameHandle != IntPtr.Zero && _config.AutoClose)
+                {
                     Application.Exit();
                 }
 
@@ -146,7 +157,22 @@ namespace unlockfps_nc.Service
             if (_config.Fullscreen)
                 commandLine += $"-window-mode {(_config.IsExclusiveFullscreen ? "exclusive" : "borderless")} ";
 
-            commandLine += $"-monitor {_config.MonitorNum} ";
+            if (_config.MonitorName != "")
+            {
+                var displayDeviceKeyToFriendlyNameDict = WindowsDisplayAPI.DisplayConfig.PathDisplayTarget.GetDisplayTargets().ToDictionary(d => d.ToDisplayDevice().DeviceKey, d => d.FriendlyName);
+                var availableDisplays = WindowsDisplayAPI.Display.GetDisplays().Where(d => d.IsAvailable).ToList();
+                availableDisplays.Sort((a, b) => a.SavedSetting.Position.IsEmpty ? -1 : b.SavedSetting.Position.IsEmpty ? 1 : a.SavedSetting.Position.X.CompareTo(b.SavedSetting.Position.X));
+                for (int i = 0; i < availableDisplays.Count; i++)
+                {
+                    var display = availableDisplays[i];
+                    if (displayDeviceKeyToFriendlyNameDict.ContainsKey(display.DeviceKey) && displayDeviceKeyToFriendlyNameDict[display.DeviceKey] == _config.MonitorName)
+                    {
+                        commandLine += $"-monitor {i + 1} ";
+                        break;
+                    }
+                }
+            }
+
             commandLine += $"{_config.AdditionalCommandLine} ";
             return commandLine;
         }

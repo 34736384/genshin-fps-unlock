@@ -48,7 +48,7 @@ namespace unlockfps_nc
             InputResX.DataBindings.Add("Value", _config, "CustomResX", true, DataSourceUpdateMode.OnPropertyChanged);
             InputResY.DataBindings.Add("Value", _config, "CustomResY", true, DataSourceUpdateMode.OnPropertyChanged);
             ComboFullscreenMode.DataBindings.Add("SelectedIndex", _config, "IsExclusiveFullscreen", true, DataSourceUpdateMode.OnPropertyChanged);
-            InputMonitorNum.DataBindings.Add("Value", _config, "MonitorNum", true, DataSourceUpdateMode.OnPropertyChanged);
+            ComboInputMonitor.DataBindings.Add("Text", _config, "MonitorName", true, DataSourceUpdateMode.OnPropertyChanged);
 
 #if !RELEASEMIN
             // DLLs            

@@ -39,7 +39,7 @@
             CBStartMinimized = new CheckBox();
             TabLaunchOptions = new TabPage();
             CBUseMobileUI = new CheckBox();
-            InputMonitorNum = new NumericUpDown();
+            ComboInputMonitor = new ComboBox();
             LabelMonitor = new Label();
             ComboFullscreenMode = new ComboBox();
             LabelWindowMode = new Label();
@@ -62,7 +62,6 @@
             TabCtrlSettings.SuspendLayout();
             TabGeneral.SuspendLayout();
             TabLaunchOptions.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)InputMonitorNum).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InputResY).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InputResX).BeginInit();
             TabDlls.SuspendLayout();
@@ -160,7 +159,7 @@
             // TabLaunchOptions
             // 
             TabLaunchOptions.Controls.Add(CBUseMobileUI);
-            TabLaunchOptions.Controls.Add(InputMonitorNum);
+            TabLaunchOptions.Controls.Add(ComboInputMonitor);
             TabLaunchOptions.Controls.Add(LabelMonitor);
             TabLaunchOptions.Controls.Add(ComboFullscreenMode);
             TabLaunchOptions.Controls.Add(LabelWindowMode);
@@ -191,12 +190,11 @@
             // 
             // InputMonitorNum
             // 
-            InputMonitorNum.Location = new Point(111, 168);
-            InputMonitorNum.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            InputMonitorNum.Name = "InputMonitorNum";
-            InputMonitorNum.Size = new Size(135, 23);
-            InputMonitorNum.TabIndex = 10;
-            InputMonitorNum.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            ComboInputMonitor.Location = new Point(111, 168);
+            ComboInputMonitor.Name = "InputMonitorNum";
+            ComboInputMonitor.Size = new Size(135, 23);
+            ComboInputMonitor.TabIndex = 10;
+            ComboInputMonitor.Items.AddRange(WindowsDisplayAPI.DisplayConfig.PathDisplayTarget.GetDisplayTargets().Select(d => d.FriendlyName).ToArray());
             // 
             // LabelMonitor
             // 
@@ -405,7 +403,6 @@
             TabGeneral.PerformLayout();
             TabLaunchOptions.ResumeLayout(false);
             TabLaunchOptions.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)InputMonitorNum).EndInit();
             ((System.ComponentModel.ISupportInitialize)InputResY).EndInit();
             ((System.ComponentModel.ISupportInitialize)InputResX).EndInit();
             TabDlls.ResumeLayout(false);
@@ -433,7 +430,7 @@
         private CheckBox CBCustomRes;
         private CheckBox CBFullscreen;
         private CheckBox CBPopup;
-        private NumericUpDown InputMonitorNum;
+        private ComboBox ComboInputMonitor;
         private Label LabelMonitor;
         private ComboBox ComboFullscreenMode;
         private Label LabelWindowMode;

@@ -25,7 +25,7 @@ namespace unlockfps_nc.Model
         public int FPSTarget { get; set; } = 120;
         public int CustomResX { get; set; } = 1920;
         public int CustomResY { get; set; } = 1080;
-        public int MonitorNum { get; set; } = 1;
+        public string MonitorName { get; set; } = "";
         public int Priority { get; set; } = 3;
         public string AdditionalCommandLine { get; set; } = "";
 
