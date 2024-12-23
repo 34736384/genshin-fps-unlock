@@ -159,7 +159,7 @@ namespace unlockfps_nc.Service
 
             if (_config.MonitorName != "")
             {
-                var displayDeviceKeyToFriendlyNameDict = WindowsDisplayAPI.DisplayConfig.PathDisplayTarget.GetDisplayTargets().ToDictionary(d => d.ToDisplayDevice().DeviceKey, d => d.FriendlyName);
+                var displayDeviceKeyToFriendlyNameDict = WindowsDisplayAPI.DisplayConfig.PathDisplayTarget.GetDisplayTargets().Where(d => d.ToDisplayDevice() != null).ToDictionary(d => d.ToDisplayDevice().DeviceKey, d => d.FriendlyName);
                 var availableDisplays = WindowsDisplayAPI.Display.GetDisplays().Where(d => d.IsAvailable).ToList();
                 availableDisplays.Sort((a, b) => a.SavedSetting.Position.IsEmpty ? -1 : b.SavedSetting.Position.IsEmpty ? 1 : a.SavedSetting.Position.X.CompareTo(b.SavedSetting.Position.X));
                 for (int i = 0; i < availableDisplays.Count; i++)
