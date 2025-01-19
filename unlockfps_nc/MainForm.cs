@@ -72,6 +72,11 @@ namespace unlockfps_nc
             setupForm.ShowDialog();
         }
 
+        private void StartGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BtnStartGame_Click(null, null);
+        }
+
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();

@@ -43,6 +43,7 @@
             ToolTipMain = new ToolTip(components);
             NotifyIconMain = new NotifyIcon(components);
             ContextNotify = new ContextMenuStrip(components);
+            StartGameToolStripMenuItem = new ToolStripMenuItem();
             ExitMenuItem = new ToolStripMenuItem();
             OptionsMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)InputFPS).BeginInit();
@@ -69,21 +70,21 @@
             // SettingsMenuItem
             // 
             SettingsMenuItem.Name = "SettingsMenuItem";
-            SettingsMenuItem.Size = new Size(116, 22);
+            SettingsMenuItem.Size = new Size(180, 22);
             SettingsMenuItem.Text = "Settings";
             SettingsMenuItem.Click += SettingsMenuItem_Click;
             // 
             // SetupMenuItem
             // 
             SetupMenuItem.Name = "SetupMenuItem";
-            SetupMenuItem.Size = new Size(116, 22);
+            SetupMenuItem.Size = new Size(180, 22);
             SetupMenuItem.Text = "Setup";
             SetupMenuItem.Click += SetupMenuItem_Click;
             // 
             // AboutMenuItem
             // 
             AboutMenuItem.Name = "AboutMenuItem";
-            AboutMenuItem.Size = new Size(116, 22);
+            AboutMenuItem.Size = new Size(180, 22);
             AboutMenuItem.Text = "About";
             AboutMenuItem.Click += AboutMenuItem_Click;
             // 
@@ -151,14 +152,21 @@
             // 
             // ContextNotify
             // 
-            ContextNotify.Items.AddRange(new ToolStripItem[] { ExitMenuItem });
+            ContextNotify.Items.AddRange(new ToolStripItem[] { StartGameToolStripMenuItem, ExitMenuItem });
             ContextNotify.Name = "ContextNotify";
-            ContextNotify.Size = new Size(94, 26);
+            ContextNotify.Size = new Size(133, 48);
+            // 
+            // StartGameToolStripMenuItem
+            // 
+            StartGameToolStripMenuItem.Name = "StartGameToolStripMenuItem";
+            StartGameToolStripMenuItem.Size = new Size(132, 22);
+            StartGameToolStripMenuItem.Text = "Start Game";
+            StartGameToolStripMenuItem.Click += StartGameToolStripMenuItem_Click;
             // 
             // ExitMenuItem
             // 
             ExitMenuItem.Name = "ExitMenuItem";
-            ExitMenuItem.Size = new Size(93, 22);
+            ExitMenuItem.Size = new Size(132, 22);
             ExitMenuItem.Text = "Exit";
             ExitMenuItem.Click += ExitMenuItem_Click;
             // 
@@ -209,5 +217,6 @@
         private ContextMenuStrip ContextNotify;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem ExitMenuItem;
+        private ToolStripMenuItem StartGameToolStripMenuItem;
     }
 }
