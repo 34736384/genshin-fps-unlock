@@ -91,7 +91,7 @@ namespace unlockfps_nc
 
                 if (string.IsNullOrEmpty(processPath))
                 {
-                    MessageBox.Show(@"Failed to find process path\nPlease use ""Browse"" instead", @"Error",
+                    MessageBox.Show(@$"Failed to find process path{Environment.NewLine}Please use ""Browse"" instead", @"Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
