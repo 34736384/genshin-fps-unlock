@@ -55,7 +55,7 @@ namespace unlockfps_nc.Service
             var configPath = GetFullPath();
             var json = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
             
-            using var fs = new FileStream(configPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough);
+            using var fs = new FileStream(configPath, FileMode.Truncate, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough);
             using var sw = new StreamWriter(fs, Encoding.UTF8);
             sw.Write(json);
 
