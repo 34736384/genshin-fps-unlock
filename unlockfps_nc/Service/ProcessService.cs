@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,23 +32,31 @@ namespace unlockfps_nc.Service
 
         public bool StartGame()
         {
-            if (!File.Exists(_config.GamePath))
-            {
+            if (!File.Exists(_config.GamePath)) {
                 MessageBox.Show(@"Game path is invalid.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-            if (IsGameRunning())
-            {
+            if (IsGameRunning()) {
                 MessageBox.Show(@"An instance of the game is already running.", @"Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return false;
             }
 
-            if (_gameHandle != IntPtr.Zero)
-            {
+            if (_gameHandle != IntPtr.Zero) {
                 Native.CloseHandle(_gameHandle);
                 _gameHandle = IntPtr.Zero;
+            }
+
+            if (_config.UseHDR) {
+                var subKeyName = Path.GetFileName(_config.GamePath) == "YuanShen.exe" ? "原神" : "Genshin Impact";
+                try {
+                    using var key = Registry.CurrentUser.CreateSubKey($@"Software\miHoYo\{subKeyName}");
+                    key.SetValue("WINDOWS_HDR_ON_h3132281285", 1);
+                }
+                catch(Exception e) {
+                    MessageBox.Show($@"Failed to enable HDR: {e.Message}", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
             STARTUPINFO si = new();
