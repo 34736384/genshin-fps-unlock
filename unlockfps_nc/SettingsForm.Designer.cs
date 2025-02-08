@@ -130,7 +130,7 @@
             CBPowerSave.Size = new Size(97, 19);
             CBPowerSave.TabIndex = 3;
             CBPowerSave.Text = "Power Saving";
-            ToolTipSettings.SetToolTip(CBPowerSave, "Sets fps to 10 and low process priority upon losing focus (e.g. tabbing out of game)");
+            ToolTipSettings.SetToolTip(CBPowerSave, "Sets fps to 10 upon losing focus (e.g. tabbing out of game)");
             CBPowerSave.UseVisualStyleBackColor = true;
             // 
             // CBAutoClose

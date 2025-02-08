@@ -62,7 +62,7 @@ namespace unlockfps_nc
             if (!File.Exists(_config.GamePath))
                 ShowSetupForm();
 
-            if (_processService.Start())
+            if (_processService.StartGame())
                 WindowState = FormWindowState.Minimized;
         }
 

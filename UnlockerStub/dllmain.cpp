@@ -1,119 +1,213 @@
-#include <windows.h>
+// ReSharper disable CppClangTidyMiscUseInternalLinkage
+#include <Windows.h>
+#include <DbgHelp.h>
+#include <ranges>
+#include <algorithm>
+#include "Utils.h"
 
+#pragma comment(lib, "dbghelp.lib")
 #pragma comment(lib, "ntdll.lib")
 EXTERN_C NTSTATUS __stdcall LdrAddRefDll(ULONG Flags, PVOID BaseAddress);
 
-bool bExit = false;
-struct IPCData* pIPCData = nullptr;
-
-enum class IPCStatus : int
+namespace
 {
-	Error = -1,
-	None = 0,
-	HostAwaiting = 1,
-	ClientReady = 2,
-	ClientExit = 3,
-	HostExit = 4
-};
+	HMODULE ModuleBase = nullptr;
+	int32_t* pFramerate = nullptr;
+	HWND GameWindow = nullptr;
 
-struct __declspec(align(8)) IPCData
-{
-	ULONG64 Address;
-	int Value;
-	IPCStatus Status;
-};
+	enum class IPCStatus : int8_t
+	{
+		None,
+		Error,
+		Ready
+	};
 
-template<typename T, typename Func>
-class MemoryGuard
-{
-	T pResource;
-	Func pFunc;
-public:
-	MemoryGuard(T pAddress, Func pFunc) : pResource(pAddress), pFunc(pFunc) {}
-	~MemoryGuard() { if (pResource) pFunc(pResource); }
-	operator T() const { return pResource; }
-	T Get() const { return pResource; }
-	operator bool() const { return pResource != nullptr && pResource != INVALID_HANDLE_VALUE; }
-};
+	struct __declspec(align(8)) IPCData
+	{
+		IPCStatus Status;
+		int32_t Framerate;
+		bool PowerSave;
+	};
 
-using HandleGuard = MemoryGuard<HANDLE, decltype(&CloseHandle)>;
-using MappedMemoryGuard = MemoryGuard<LPVOID, decltype(&UnmapViewOfFile)>;
-
-template<typename T>
-T Clamp(T val, T min, T max)
-{
-	return val < min ? min : val > max ? max : val;
 }
 
-BOOL __declspec(noinline) OnWinError(const char* szFunction, DWORD dwError)
+LONG __stdcall VectoredExceptionHandler(PEXCEPTION_POINTERS ExceptionInfo)
 {
-	char szMessage[256];
-	wsprintfA(szMessage, "%s failed with error %d", szFunction, dwError);
-	MessageBoxA(nullptr, szMessage, "Error", MB_ICONERROR);
+	const auto exceptionRecord = ExceptionInfo->ExceptionRecord;
 
-	if (pIPCData)
-		pIPCData->Status = IPCStatus::Error;
+	HMODULE hModule = nullptr;
+	GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, static_cast<LPCSTR>(exceptionRecord->ExceptionAddress), &hModule);
+	
+	if (hModule == ModuleBase && 
+		(exceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION || exceptionRecord->ExceptionCode == EXCEPTION_ILLEGAL_INSTRUCTION || exceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW))
+	{
 
-	return FALSE;
+		MINIDUMP_EXCEPTION_INFORMATION dumpInfo{};
+		dumpInfo.ThreadId = GetCurrentThreadId();
+		dumpInfo.ExceptionPointers = ExceptionInfo;
+		dumpInfo.ClientPointers = TRUE;
+
+		const auto hFile = CreateFileW(L"crashdump.dmp", GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &dumpInfo, nullptr, nullptr);
+		CloseHandle(hFile);
+
+		Utils::ShowError(L"An unhandled exception has occurred, a crash dump has been saved to crashdump.dmp");
+		ExitThread(1);
+	}
+
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
+bool SetupData()
+{
+
+	const auto imageBase = reinterpret_cast<uint8_t*>(GetModuleHandleA(nullptr));
+	const auto dosHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(imageBase);
+	const auto ntHeaders = reinterpret_cast<PIMAGE_NT_HEADERS>(imageBase + dosHeader->e_lfanew);
+
+	std::span sections{ IMAGE_FIRST_SECTION(ntHeaders), ntHeaders->FileHeader.NumberOfSections };
+	std::span<uint8_t> il2cppSection{};
+	for (const auto& section : sections)
+	{
+		if (strcmp(reinterpret_cast<const char*>(section.Name), "il2cpp") == 0)
+		{
+			il2cppSection = { imageBase + section.VirtualAddress, section.Misc.VirtualSize };
+			break;
+		}
+	}
+
+	if (il2cppSection.empty())
+	{
+		Utils::ShowError(L"Failed to find il2cpp section");
+		return false;
+	}
+
+	const auto patternResults = Utils::PatternScanAll(il2cppSection, "B9 3C 00 00 00 E8");
+	auto targetEntry = std::ranges::filter_view(patternResults, [](const auto& result) { 
+		const auto rip = result + 5;
+		const auto disp = *reinterpret_cast<int32_t*>(rip + 1);
+		const auto dest = rip + disp + 5;
+		return *dest == 0xE9;
+	}) | std::ranges::views::take(1);
+
+	if (targetEntry.empty())
+	{
+		Utils::ShowError(L"outdated pattern");
+		return false;
+	}
+
+	auto rip = targetEntry.front() + 5;
+	while (rip[0] == 0xE8 || rip[0] == 0xE9)
+	{
+		const auto disp = *reinterpret_cast<int32_t*>(rip + 1);
+		rip += disp + 5;
+	}
+
+	const auto disp = *reinterpret_cast<int32_t*>(rip + 2);
+	pFramerate = reinterpret_cast<int32_t*>(rip + disp + 6);
+
+	MEMORY_BASIC_INFORMATION mbi{};
+	VirtualQuery(pFramerate, &mbi, sizeof(mbi));
+
+	if (mbi.Protect != PAGE_READWRITE)
+	{
+		Utils::ShowError(L"invalid address");
+		return false;
+	}
+
+	return true;
+}
+
+HWND GetGameWindow()
+{
+
+	EnumWindows([](HWND hwnd, LPARAM lParam) -> BOOL
+	{
+		char className[256]{};
+		GetClassNameA(hwnd, className, sizeof(className));
+
+		DWORD pid = 0;
+		GetWindowThreadProcessId(hwnd, &pid);
+		if (pid == GetCurrentProcessId() && strcmp(className, "UnityWndClass") == 0)
+		{
+			GameWindow = hwnd;
+			return FALSE;
+		}
+		return TRUE;
+	}, 0);
+
+	return GameWindow;
 }
 
 DWORD __stdcall ThreadProc(LPVOID lpParameter)
 {
-	const auto hModule = static_cast<HMODULE>(lpParameter);
-	LdrAddRefDll(1, hModule);
+	const auto processName = Utils::GetModulePath(nullptr);
+	if (!processName.contains(L"YuanShen.exe") && !processName.contains(L"GenshinImpact.exe"))
+		return 0;
 
-	constexpr auto szGuid = "2DE95FDC-6AB7-4593-BFE6-760DD4AB422B";
+	const auto processDirectory = processName.substr(0, processName.find_last_of(L'\\'));
+	SetCurrentDirectoryW(processDirectory.c_str());
 
+	LdrAddRefDll(1, lpParameter);
+	AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+
+	constexpr auto szGuid = "Global\\2DE95FDC-6AB7-4593-BFE6-760DD4AB422B";
 	const auto hMapFile = HandleGuard(OpenFileMappingA(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, szGuid), CloseHandle);
 	if (!hMapFile)
-		return OnWinError("OpenFileMapping", GetLastError());
+	{
+		Utils::ShowWin32Error(L"OpenFileMappingA");
+		return 0;
+	}
 
 	const auto lpView = MappedMemoryGuard(MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0), UnmapViewOfFile);
 	if (!lpView)
-		return OnWinError("MapViewOfFile", GetLastError());
-
-	pIPCData = static_cast<IPCData*>(lpView.Get());
-
-	// the address shouldn't change, so we make a copy to make sure it's not changed by the host
-	const auto pFpsValue = reinterpret_cast<int*>(pIPCData->Address);
-
-	// check if the address is valid
-	MEMORY_BASIC_INFORMATION mbi{};
-	if (!VirtualQuery(pFpsValue, &mbi, sizeof(mbi)))
-		return OnWinError("VirtualQuery", GetLastError());
-
-	if (mbi.Protect != PAGE_READWRITE)
-		return OnWinError("VirtualQuery", ERROR_INVALID_ADDRESS);
-
-	pIPCData->Status = IPCStatus::ClientReady;
-
-	while (pIPCData->Status != IPCStatus::HostExit)
 	{
-		const auto targetValue = Clamp(pIPCData->Value, 1, 1000);
-		*pFpsValue = targetValue;
+		Utils::ShowWin32Error(L"MapViewOfFile");
+		return 0;
+	}
 
+	const auto ipcData = static_cast<IPCData*>(lpView.Get());
+
+	if (!SetupData())
+	{
+		ipcData->Status = IPCStatus::Error;
+		return 0;
+	}
+
+	ipcData->Status = IPCStatus::Ready;
+
+	while (true)
+	{
+		int32_t targetFramerate = ipcData->Framerate;
+
+		if (!GameWindow)
+			GameWindow = GetGameWindow();
+
+		if (GameWindow && ipcData->PowerSave)
+		{
+			if (GetForegroundWindow() != GameWindow)
+				targetFramerate = 10;
+		}
+
+		targetFramerate = std::clamp(targetFramerate, 10, 1000);
+		*pFramerate = targetFramerate;
 		Sleep(62);
 	}
 
-	pIPCData->Status = IPCStatus::ClientExit;
 	return 0;
 }
 
 BOOL __stdcall DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpReserved)
 {
+	ModuleBase = hInstance;
+
 	if (hInstance)
 		DisableThreadLibraryCalls(hInstance);
 
-	if (!GetModuleHandleA("mhypbase.dll"))
-		return TRUE;
-
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		const auto hThread = CreateThread(nullptr, 0, ThreadProc, hInstance, 0, nullptr);
-		if (!hThread)
-			return OnWinError("CreateThread", GetLastError());
-
-		CloseHandle(hThread);
+		if (const auto hThread = CreateThread(nullptr, 0, ThreadProc, hInstance, 0, nullptr))
+			CloseHandle(hThread);
 	}
 
 	return TRUE;
