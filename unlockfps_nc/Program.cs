@@ -7,7 +7,7 @@ namespace unlockfps_nc
 {
     internal static class Program
     {
-        private static IntPtr MutexHandle = IntPtr.Zero;
+        private static Mutex MutexHandle = new(true, "GenshinFPSUnlocker");
         public static IServiceProvider ServiceProvider { get; private set; }
 
         [STAThread]
@@ -19,13 +19,19 @@ namespace unlockfps_nc
                 return;
             }
 
-            MutexHandle = Native.CreateMutex(IntPtr.Zero, true, @"GenshinFPSUnlocker");
-            if (Marshal.GetLastWin32Error() == 183)
-            {
-                MessageBox.Show(@"Another unlocker is already running.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (!MutexHandle.WaitOne(TimeSpan.Zero, true)) {
+                
+                var window = Native.FindWindow(null, "Genshin FPS Unlocker");
+                if (window != IntPtr.Zero) {
+                    Native.ShowWindow(window, 9); // SW_RESTORE
+                    Native.SetForegroundWindow(window);
+                    return;
+                }
+
+                MessageBox.Show(@"Another instance of the unlocker is already running.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
+
             var services = new ServiceCollection();
             services.AddTransient<MainForm>();
             services.AddTransient<SettingsForm>();
