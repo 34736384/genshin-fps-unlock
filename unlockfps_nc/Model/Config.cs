@@ -28,6 +28,7 @@ namespace unlockfps_nc.Model
         public int MonitorNum { get; set; } = 1;
         public int Priority { get; set; } = 3;
         public int Affinity { get; set; } = 0;
+        public string AdditionalCommandLine { get; set; } = "";
 
         public List<string> DllList { get; set; } = new();
     }

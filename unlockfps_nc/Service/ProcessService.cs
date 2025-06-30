@@ -247,6 +247,7 @@ namespace unlockfps_nc.Service
                 commandLine += "use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ";
 
             commandLine += $"-monitor {_config.MonitorNum} ";
+            commandLine += $"{_config.AdditionalCommandLine} ";
             return commandLine;
         }
 

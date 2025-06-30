@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include <windows.h>
 
 #pragma comment(lib, "ntdll.lib")
 EXTERN_C NTSTATUS __stdcall LdrAddRefDll(ULONG Flags, PVOID BaseAddress);
