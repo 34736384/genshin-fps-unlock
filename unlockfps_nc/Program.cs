@@ -7,7 +7,8 @@ namespace unlockfps_nc
 {
     internal static class Program
     {
-        private static Mutex MutexHandle = new(true, "GenshinFPSUnlocker");
+        private static readonly string MutexName = "286B345F-A2EB-4FF3-83E9-2DD83B87694A";
+        private static readonly string EventName = "B2ABB8F2-E6B2-4E31-8A11-15F969ADF755";
         public static IServiceProvider ServiceProvider { get; private set; }
 
         [STAThread]
@@ -19,18 +20,38 @@ namespace unlockfps_nc
                 return;
             }
 
-            if (!MutexHandle.WaitOne(TimeSpan.Zero, true)) {
-                
-                var window = Native.FindWindow(null, "Genshin FPS Unlocker");
-                if (window != IntPtr.Zero) {
-                    Native.ShowWindow(window, 9); // SW_RESTORE
-                    Native.SetForegroundWindow(window);
-                    return;
-                }
+            bool isFirst;
+            using var mutex = new Mutex(true, MutexName, out isFirst);
 
-                MessageBox.Show(@"Another instance of the unlocker is already running.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (!isFirst) {
+                // second instance
+                try {
+                    using var evt = EventWaitHandle.OpenExisting(EventName);
+                    evt.Set();
+                }
+                catch { }
                 return;
             }
+
+            using var showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, EventName);
+            _ = Task.Run(() => {
+                while (showEvent.WaitOne()) {
+
+                    var form = Application.OpenForms
+                        .OfType<MainForm>()
+                        .FirstOrDefault();
+
+                    if (form is { IsHandleCreated: true }) {
+
+                        form.Invoke(() => {
+                            Native.ShowWindow(form.Handle, 9); // SW_RESTORE
+                            Native.SetForegroundWindow(form.Handle);
+                        });
+
+                    }
+
+                }
+            });
 
             var services = new ServiceCollection();
             services.AddTransient<MainForm>();
