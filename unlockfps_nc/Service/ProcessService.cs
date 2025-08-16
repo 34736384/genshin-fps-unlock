@@ -107,25 +107,25 @@ namespace unlockfps_nc.Service
         {
             while (!_cts.IsCancellationRequested) {
 
-                await Task.Delay(1000);
+                await Task.Delay(1000, _cts.Token);
                 using var process = Process.GetProcesses()
                     .FirstOrDefault(x => x is { ProcessName: "GenshinImpact" } or { ProcessName: "YuanShen" });
                 if (process == null)
                     continue;
 
-                while (Native.GetForegroundWindow() != process.MainWindowHandle && !_cts.IsCancellationRequested)
-                    await Task.Delay(1000);
+                while (!ProcessUtils.IsWindowDrawing(process.MainWindowHandle) && !_cts.IsCancellationRequested)
+                    await Task.Delay(1000, _cts.Token);
 
                 if (!_ipcService.Start(process.Id))
                     return;
 
                 while (!process.HasExited && !_cts.IsCancellationRequested) {
                     _ipcService.Update();
-                    await Task.Delay(62);
+                    await Task.Delay(62, _cts.Token);
                 }
 
                 _ipcService.OnGameExit();
-                await Task.Delay(5000);
+                await Task.Delay(5000, _cts.Token);
             }
         }
 

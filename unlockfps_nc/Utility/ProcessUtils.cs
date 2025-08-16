@@ -211,5 +211,21 @@ namespace unlockfps_nc.Utility
             return IntPtr.Zero;
         }
 
+        public static bool IsWindowDrawing(IntPtr hWnd)
+        {
+            if (!Native.IsWindowVisible(hWnd))
+                return false;
+
+            Native.RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 0x122); // RDW_INTERNALPAINT | RDW_NOERASE | RDW_UPDATENOW
+            Native.UpdateWindow(hWnd);
+
+            var hdc = Native.GetDC(hWnd);
+            if (hdc == IntPtr.Zero)
+                return false;
+
+            Native.ReleaseDC(hWnd, hdc);
+            return true;
+        }
+
     }
 }
