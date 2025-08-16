@@ -20,8 +20,7 @@ namespace unlockfps_nc
                 return;
             }
 
-            bool isFirst;
-            using var mutex = new Mutex(true, MutexName, out isFirst);
+            using var mutex = new Mutex(true, MutexName, out var isFirst);
 
             if (!isFirst) {
                 // second instance
