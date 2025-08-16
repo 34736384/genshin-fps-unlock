@@ -109,5 +109,29 @@ namespace unlockfps_nc
             var aboutForm = new AboutForm();
             aboutForm.ShowDialog();
         }
+
+        public void BringToForeground()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(BringToForeground));
+                return;
+            }
+
+            if (WindowState == FormWindowState.Minimized)
+            {
+                WindowState = FormWindowState.Normal;
+                ShowInTaskbar = true;
+                Show();
+            }
+
+            TopMost = true;
+            Activate();
+            BringToFront();
+            TopMost = false;
+
+            Location = _windowLocation;
+            Size = _windowSize;
+        }
     }
 }

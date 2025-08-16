@@ -22,7 +22,7 @@ namespace unlockfps_nc
             MutexHandle = Native.CreateMutex(IntPtr.Zero, true, @"GenshinFPSUnlocker");
             if (Marshal.GetLastWin32Error() == 183)
             {
-                MessageBox.Show(@"Another unlocker is already running.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ActivationService.TryActivateExistingInstance();
                 return;
             }
             
@@ -37,7 +37,12 @@ namespace unlockfps_nc
             ServiceProvider = services.BuildServiceProvider();
 
             ApplicationConfiguration.Initialize();
-            Application.Run(ServiceProvider.GetRequiredService<MainForm>());
+            
+            var mainForm = ServiceProvider.GetRequiredService<MainForm>();
+            var activationService = new ActivationService(mainForm);
+            activationService.StartListening();
+            
+            Application.Run(mainForm);
         }
 
 
