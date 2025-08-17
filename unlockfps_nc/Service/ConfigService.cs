@@ -11,6 +11,7 @@ namespace unlockfps_nc.Service
     public class ConfigService
     {
         private static readonly string ConfigName = "fps_config.json";
+        private object _lock = new();
 
         public Config Config { get; private set; } = new();
 
@@ -52,12 +53,14 @@ namespace unlockfps_nc.Service
 
         public void Save()
         {
-            var configPath = GetFullPath();
-            var json = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
-            
-            using var fs = new FileStream(configPath, FileMode.Truncate, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough);
-            using var sw = new StreamWriter(fs, Encoding.UTF8);
-            sw.Write(json);
+            lock (_lock) {
+                var configPath = GetFullPath();
+                var json = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
+
+                using var fs = new FileStream(configPath, FileMode.Truncate, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough);
+                using var sw = new StreamWriter(fs, Encoding.UTF8);
+                sw.Write(json);
+            }
 
         }
 

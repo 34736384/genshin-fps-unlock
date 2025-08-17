@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using unlockfps_nc.Model;
 using unlockfps_nc.Service;
@@ -41,6 +43,8 @@ namespace unlockfps_nc
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            _ = Task.Run(CheckVersion);
+
             _windowLocation = Location;
             _windowSize = Size;
             if (_config.AutoStart)
@@ -127,9 +131,57 @@ namespace unlockfps_nc
             Show();
             Activate();
             TopMost = false;
-
+            
             Location = _windowLocation;
             Size = _windowSize;
+        }
+
+        async Task CheckVersion()
+        {
+
+            using var client = new HttpClient();
+            try
+            {
+                var response = await client.GetAsync("https://ys.ex-m.net/fps-unlock/version");
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                var remoteVersion = JsonSerializer.Deserialize<VersionInfo>(content);
+                
+                if (remoteVersion == null || remoteVersion.Version <= Program.Version)
+                    return;
+
+                var utcNow = DateTimeOffset.UtcNow;
+                var lastNotify = DateTimeOffset.FromUnixTimeSeconds(_config.LastVersionNotify);
+                if (utcNow - lastNotify < TimeSpan.FromDays(7))
+                    return;
+
+                var message = $@"A new version is available!{Environment.NewLine}" +
+                              $@"Current version: {Program.Version}{Environment.NewLine}" +
+                              $@"Latest version: {remoteVersion.Version}{Environment.NewLine}" +
+                              $@"Would you like to go to the release page?";
+
+                var result = MessageBox.Show(message, @"FPS Unlocker", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.DefaultDesktopOnly);
+                
+                if (result == DialogResult.Yes) {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = remoteVersion.Url,
+                        UseShellExecute = true
+                    };
+                    Process.Start(psi);
+                }
+                else {
+                    _config.LastVersionNotify = utcNow.ToUnixTimeSeconds();
+                    _configService.Save();
+                }
+
+            }
+            catch
+            {
+                // ignored
+            }
+
         }
 
     }

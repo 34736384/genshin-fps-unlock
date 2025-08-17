@@ -29,6 +29,8 @@ namespace unlockfps_nc.Model
         public int Priority { get; set; } = 3;
         public string AdditionalCommandLine { get; set; } = "";
 
+        public long LastVersionNotify { get; set; } = 0;
+
         public List<string> DllList { get; set; } = new();
     }
 }
