@@ -44,6 +44,7 @@
             NotifyIconMain = new NotifyIcon(components);
             ContextNotify = new ContextMenuStrip(components);
             ExitMenuItem = new ToolStripMenuItem();
+            StartGameMenuItem = new ToolStripMenuItem();
             OptionsMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)InputFPS).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SliderFPS).BeginInit();
@@ -151,16 +152,23 @@
             // 
             // ContextNotify
             // 
-            ContextNotify.Items.AddRange(new ToolStripItem[] { ExitMenuItem });
+            ContextNotify.Items.AddRange(new ToolStripItem[] { StartGameMenuItem, ExitMenuItem });
             ContextNotify.Name = "ContextNotify";
-            ContextNotify.Size = new Size(94, 26);
+            ContextNotify.Size = new Size(181, 70);
             // 
             // ExitMenuItem
             // 
             ExitMenuItem.Name = "ExitMenuItem";
-            ExitMenuItem.Size = new Size(93, 22);
+            ExitMenuItem.Size = new Size(180, 22);
             ExitMenuItem.Text = "Exit";
             ExitMenuItem.Click += ExitMenuItem_Click;
+            // 
+            // StartGameMenuItem
+            // 
+            StartGameMenuItem.Name = "StartGameMenuItem";
+            StartGameMenuItem.Size = new Size(180, 22);
+            StartGameMenuItem.Text = "Start Game";
+            StartGameMenuItem.Click += StartGameMenuItem_Click;
             // 
             // MainForm
             // 
@@ -209,5 +217,6 @@
         private ContextMenuStrip ContextNotify;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem ExitMenuItem;
+        private ToolStripMenuItem StartGameMenuItem;
     }
 }

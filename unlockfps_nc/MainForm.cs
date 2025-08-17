@@ -109,5 +109,10 @@ namespace unlockfps_nc
             var aboutForm = new AboutForm();
             aboutForm.ShowDialog();
         }
+
+        private void StartGameMenuItem_Click(object sender, EventArgs e)
+        {
+            BtnStartGame_Click(sender, e);
+        }
     }
 }
