@@ -13,6 +13,8 @@ namespace unlockfps_nc
         private readonly Config _config;
         private readonly ProcessService _processService;
 
+        private bool _notifyOnce = false;
+
         public MainForm(
             ConfigService configService,
             ProcessService processService)
@@ -85,9 +87,12 @@ namespace unlockfps_nc
 
         private void NotifyAndHide()
         {
-            NotifyIconMain.Visible = true;
-            NotifyIconMain.Text = $@"FPS Unlocker (FPS: {_config.FPSTarget})";
-            NotifyIconMain.ShowBalloonTip(500);
+            if (!_notifyOnce) {
+                NotifyIconMain.Visible = true;
+                NotifyIconMain.Text = $@"FPS Unlocker (FPS: {_config.FPSTarget})";
+                NotifyIconMain.ShowBalloonTip(500);
+                _notifyOnce = true;
+            }
 
             ShowInTaskbar = false;
             Hide();
@@ -95,13 +100,7 @@ namespace unlockfps_nc
 
         private void NotifyIconMain_DoubleClick(object sender, EventArgs e)
         {
-            WindowState = FormWindowState.Normal;
-            ShowInTaskbar = true;
-            Show();
-            Activate();
-
-            Location = _windowLocation;
-            Size = _windowSize;
+            RestoreFromTray();
         }
 
         private void AboutMenuItem_Click(object sender, EventArgs e)
@@ -114,5 +113,24 @@ namespace unlockfps_nc
         {
             BtnStartGame_Click(sender, e);
         }
+
+        public void RestoreFromTray()
+        {
+            if (InvokeRequired) {
+                Invoke(RestoreFromTray);
+                return;
+            }
+
+            WindowState = FormWindowState.Normal;
+            ShowInTaskbar = true;
+            TopMost = true;
+            Show();
+            Activate();
+            TopMost = false;
+
+            Location = _windowLocation;
+            Size = _windowSize;
+        }
+
     }
 }

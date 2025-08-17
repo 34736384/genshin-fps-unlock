@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using unlockfps_nc.Service;
 using unlockfps_nc.Utility;
 
@@ -41,16 +43,28 @@ namespace unlockfps_nc
                         .FirstOrDefault();
 
                     if (form is { IsHandleCreated: true }) {
-
-                        form.Invoke(() => {
-                            Native.ShowWindow(form.Handle, 9); // SW_RESTORE
-                            Native.SetForegroundWindow(form.Handle);
-                        });
-
+                        form.RestoreFromTray();
                     }
 
                 }
             });
+
+            if (!IsAdministrator()) {
+                try {
+                    ProcessStartInfo processInfo = new ProcessStartInfo
+                    {
+                        FileName = Application.ExecutablePath,
+                        UseShellExecute = true,
+                        Verb = "runas"
+                    };
+                    Process.Start(processInfo);
+                }
+                catch {
+                    // ignored
+                }
+
+                return;
+            }
 
             var services = new ServiceCollection();
             services.AddTransient<MainForm>();
@@ -66,6 +80,12 @@ namespace unlockfps_nc
             Application.Run(ServiceProvider.GetRequiredService<MainForm>());
         }
 
+        static bool IsAdministrator()
+        {
+            using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
 
     }
 }
