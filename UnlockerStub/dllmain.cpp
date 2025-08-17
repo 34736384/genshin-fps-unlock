@@ -69,7 +69,7 @@ bool SetupData()
 	std::span<uint8_t> il2cppSection{};
 	for (const auto& section : sections)
 	{
-		if (strcmp(reinterpret_cast<const char*>(section.Name), "il2cpp") == 0)
+		if (std::string_view(reinterpret_cast<const char*>(section.Name)) == "il2cpp")
 		{
 			il2cppSection = { imageBase + section.VirtualAddress, section.Misc.VirtualSize };
 			break;
@@ -124,11 +124,11 @@ HWND GetGameWindow()
 	EnumWindows([](HWND hwnd, LPARAM lParam) -> BOOL
 	{
 		char className[256]{};
-		GetClassNameA(hwnd, className, sizeof(className));
+		const auto cbReturned = GetClassNameA(hwnd, className, sizeof(className));
 
 		DWORD pid = 0;
 		GetWindowThreadProcessId(hwnd, &pid);
-		if (pid == GetCurrentProcessId() && strcmp(className, "UnityWndClass") == 0)
+		if (pid == GetCurrentProcessId() && std::string_view(className, cbReturned) == "UnityWndClass")
 		{
 			GameWindow = hwnd;
 			return FALSE;
@@ -149,7 +149,7 @@ DWORD __stdcall ThreadProc(LPVOID lpParameter)
 	SetCurrentDirectoryW(processDirectory.c_str());
 
 	LdrAddRefDll(1, lpParameter);
-	AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+	//AddVectoredExceptionHandler(1, VectoredExceptionHandler);
 
 	constexpr auto szGuid = "Global\\2DE95FDC-6AB7-4593-BFE6-760DD4AB422B";
 	const auto hMapFile = HandleGuard(OpenFileMappingA(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, szGuid), CloseHandle);
