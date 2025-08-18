@@ -124,6 +124,10 @@ namespace unlockfps_nc.Service
                     await Task.Delay(62, _cts.Token);
                 }
 
+                if (_gameHandle != IntPtr.Zero && _config.AutoClose) {
+                    Application.Exit();
+                }
+
                 _ipcService.OnGameExit();
                 await Task.Delay(5000, _cts.Token);
             }
