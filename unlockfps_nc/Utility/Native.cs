@@ -90,15 +90,15 @@ namespace unlockfps_nc.Utility
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
 
-        [DllImport("kernel32.dll", SetLastError =true)]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int nSize, out int lpNumberOfBytesRead);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, out uint lpThreadId);
-        
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
-        
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint dwFreeType);
 
@@ -140,6 +140,12 @@ namespace unlockfps_nc.Utility
 
         [DllImport("ntdll.dll")]
         public static extern uint RtlAdjustPrivilege(uint Privilege, bool bEnablePrivilege, bool IsThreadPrivilege, out bool PreviousValue);
+
+        [DllImport("Xinput1_4.dll")]
+        public static extern void XInputEnable(bool enable);
+
+        [DllImport("Xinput1_4.dll")]
+        public static extern uint XInputGetKeystroke(uint dwUserIndex, uint dwReserved, out XINPUT_KEYSTROKE pKeystroke);
 
         public static bool IsWine()
         {
@@ -192,7 +198,7 @@ namespace unlockfps_nc.Utility
         public const uint SET_LIMITED_INFORMATION = 0x2000;
         public const uint ALL_ACCESS = 0x1FFFFF;
     }
-    
+
     internal static class StandardAccess
     {
         public const uint DELETE = 0x00010000;
@@ -236,6 +242,34 @@ namespace unlockfps_nc.Utility
         public const uint READONLY = 0x02;
         public const uint READWRITE = 0x04;
         public const uint WRITECOPY = 0x08;
+    }
+
+    internal static class XUserIndex
+    {
+        public const uint XUSER_INDEX_ANY = 0x000000FF;
+    }
+
+    internal static class XKeystrokeCode
+    {
+        public const ushort VK_PAD_B = 0x5801;
+        public const ushort VK_PAD_Y = 0x5803;
+        public const ushort VK_PAD_LTHUMB_PRESS = 0x5816;
+        public const ushort VK_PAD_LTRIGGER = 0x5806;
+        public const ushort VK_PAD_RTRIGGER = 0x5807;
+    }
+
+    internal static class XKeystrokeFlags
+    {
+        public const ushort XINPUT_KEYSTROKE_KEYDOWN = 0x0001;
+        public const ushort XINPUT_KEYSTROKE_KEYUP = 0x0002;
+        public const ushort XINPUT_KEYSTROKE_REPEAT = 0x0004;
+    }
+
+    internal static class XInputGetKeystrokeResult 
+    {
+        public const uint ERROR_SUCCESS = 0;
+        public const uint ERROR_EMPTY = 4306;
+        public const uint ERROR_DEVICE_NOT_CONNECTED = 1167;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -382,5 +416,15 @@ namespace unlockfps_nc.Utility
         public IntPtr lpBaseOfDll;
         public uint SizeOfImage;
         public IntPtr EntryPoint;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XINPUT_KEYSTROKE
+    {
+        public ushort VirtualKey;
+        public char Unicode;
+        public ushort Flags;
+        public byte UserIndex;
+        public byte HidCode;
     }
 }

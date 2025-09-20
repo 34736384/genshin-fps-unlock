@@ -14,18 +14,31 @@ namespace unlockfps_nc
         private readonly ConfigService _configService;
         private readonly Config _config;
         private readonly ProcessService _processService;
+        private readonly MainPageXInputService _mainPageXInputService;
 
         private bool _notifyOnce = false;
 
         public MainForm(
             ConfigService configService,
-            ProcessService processService)
+            ProcessService processService,
+            MainPageXInputService mainPageXInputService)
         {
             InitializeComponent();
             _configService = configService;
             _config = _configService.Config;
             _processService = processService;
+            _mainPageXInputService = mainPageXInputService;
+            mainPageXInputService.KeyBPressed += (s, e) => NotifyAndHide();
+            mainPageXInputService.KeyYPressed += BtnStartGame_Click;
+            mainPageXInputService.KeyLCenterPressed += (s, e) => CBAutoStart.Checked = !CBAutoStart.Checked;
+            mainPageXInputService.FpsAdjustPressed += FpsAdjustPressed;
             SetupBindings();
+        }
+
+        private void FpsAdjustPressed(object? sender, int delta)
+        {
+            var newFps = Math.Clamp(SliderFPS.Value + delta, SliderFPS.Minimum, SliderFPS.Maximum);
+            SliderFPS.Value = newFps;
         }
 
         private void SettingsMenuItem_Click(object sender, EventArgs e)
@@ -63,7 +76,7 @@ namespace unlockfps_nc
             ShowSetupForm();
         }
 
-        private void BtnStartGame_Click(object sender, EventArgs e)
+        private void BtnStartGame_Click(object? sender, EventArgs? e)
         {
             if (!File.Exists(_config.GamePath))
                 ShowSetupForm();
@@ -91,7 +104,8 @@ namespace unlockfps_nc
 
         private void NotifyAndHide()
         {
-            if (!_notifyOnce) {
+            if (!_notifyOnce)
+            {
                 NotifyIconMain.Visible = true;
                 NotifyIconMain.Text = $@"FPS Unlocker (FPS: {_config.FPSTarget})";
                 NotifyIconMain.ShowBalloonTip(500);
@@ -120,7 +134,8 @@ namespace unlockfps_nc
 
         public void RestoreFromTray()
         {
-            if (InvokeRequired) {
+            if (InvokeRequired)
+            {
                 Invoke(RestoreFromTray);
                 return;
             }
@@ -131,7 +146,7 @@ namespace unlockfps_nc
             Show();
             Activate();
             TopMost = false;
-            
+
             Location = _windowLocation;
             Size = _windowSize;
         }
@@ -146,7 +161,7 @@ namespace unlockfps_nc
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 var remoteVersion = JsonSerializer.Deserialize<VersionInfo>(content);
-                
+
                 if (remoteVersion == null || remoteVersion.Version <= Program.Version)
                     return;
 
@@ -162,8 +177,9 @@ namespace unlockfps_nc
 
                 var result = MessageBox.Show(message, @"FPS Unlocker", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1,
                     MessageBoxOptions.DefaultDesktopOnly);
-                
-                if (result == DialogResult.Yes) {
+
+                if (result == DialogResult.Yes)
+                {
                     var psi = new ProcessStartInfo
                     {
                         FileName = remoteVersion.Url,
@@ -171,7 +187,8 @@ namespace unlockfps_nc
                     };
                     Process.Start(psi);
                 }
-                else {
+                else
+                {
                     _config.LastVersionNotify = utcNow.ToUnixTimeSeconds();
                     _configService.Save();
                 }
@@ -184,5 +201,14 @@ namespace unlockfps_nc
 
         }
 
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            _mainPageXInputService.ResumeListening();
+        }
+
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            _mainPageXInputService.PauseListening();
+        }
     }
 }
