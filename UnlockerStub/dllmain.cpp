@@ -109,9 +109,15 @@ bool SetupData()
 	MEMORY_BASIC_INFORMATION mbi{};
 	VirtualQuery(pFramerate, &mbi, sizeof(mbi));
 
-	if (mbi.Protect != PAGE_READWRITE)
+	if (mbi.Protect != PAGE_READWRITE &&
+		mbi.Protect != PAGE_WRITECOPY &&
+		mbi.Protect != PAGE_EXECUTE_READWRITE && 
+		mbi.Protect != PAGE_EXECUTE_WRITECOPY)
 	{
-		Utils::ShowError(L"invalid address");
+		wchar_t msg[256]{};
+		swprintf_s(msg, L"invalid address\naddress %p is not writable\npage protection: 0x%X", pFramerate, mbi.Protect);
+
+		Utils::ShowError(msg);
 		return false;
 	}
 
