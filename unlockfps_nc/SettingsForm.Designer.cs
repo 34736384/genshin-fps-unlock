@@ -154,7 +154,7 @@
             CBStartMinimized.Size = new Size(167, 19);
             CBStartMinimized.TabIndex = 1;
             CBStartMinimized.Text = "Start Minimized (Unlocker)";
-            ToolTipSettings.SetToolTip(CBStartMinimized, "Unlocker will minimized to tray on starup");
+            ToolTipSettings.SetToolTip(CBStartMinimized, "Unlocker will minimized to tray on startup");
             CBStartMinimized.UseVisualStyleBackColor = true;
             // 
             // TabLaunchOptions
