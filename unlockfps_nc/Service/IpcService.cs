@@ -24,6 +24,7 @@ namespace unlockfps_nc.Service
         public IpcStatus Status;
         public int Framerate;
         public bool PowerSave;
+        public bool UseMobileUI;
     }
 
     public class IpcService(ConfigService configService) : IDisposable
@@ -89,7 +90,7 @@ namespace unlockfps_nc.Service
                 if (ipcData.Status == IpcStatus.Error)
                     return false;
 
-                if (retryCount >= 10) {
+                if (retryCount >= 20) {
                     MessageBox.Show(@"Failed to start the unlocker.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
@@ -116,7 +117,8 @@ namespace unlockfps_nc.Service
             var ipcData = new IpcData
             {
                 Framerate = configService.Config.FPSTarget,
-                PowerSave = configService.Config.UsePowerSave
+                PowerSave = configService.Config.UsePowerSave,
+                UseMobileUI = configService.Config.UseMobileUI,
             };
 
             _sharedMemoryAccessor?.Write(0, ref ipcData);

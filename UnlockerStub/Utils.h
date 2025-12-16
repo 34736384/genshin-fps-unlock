@@ -31,4 +31,6 @@ namespace Utils
 	void ShowWin32Error(const std::wstring& apiName);
 	void ShowError(const std::wstring& message);
 
+	uint8_t* AllocatePage(uint8_t* desiredAddress, size_t size, DWORD protect);
+
 }
