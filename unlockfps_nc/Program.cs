@@ -74,6 +74,7 @@ namespace unlockfps_nc
             services.AddSingleton<ConfigService>();
             services.AddSingleton<ProcessService>();
             services.AddSingleton<IpcService>();
+            services.AddSingleton<MainPageXInputService>();
 
             ServiceProvider = services.BuildServiceProvider();
 
