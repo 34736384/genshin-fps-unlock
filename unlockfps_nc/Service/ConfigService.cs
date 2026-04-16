@@ -42,7 +42,6 @@ namespace unlockfps_nc.Service
             Config.Priority = Math.Clamp(Config.Priority, 0, 5);
             Config.CustomResX = Math.Clamp(Config.CustomResX, 200, 7680);
             Config.CustomResY = Math.Clamp(Config.CustomResY, 200, 4320);
-            Config.MonitorNum = Math.Clamp(Config.MonitorNum, 1, 100);
         }
 
         private string GetFullPath()
