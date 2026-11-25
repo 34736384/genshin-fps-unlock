@@ -210,3 +210,19 @@ uint8_t* Utils::AllocatePage(uint8_t* desiredAddress, size_t size, DWORD protect
 
 	return nullptr;
 }
+
+std::span<uint8_t> Utils::GetIl2CppSection()
+{
+	const auto imageBase = reinterpret_cast<uint8_t*>(GetModuleHandleA(nullptr));
+	const auto dosHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(imageBase);
+	const auto ntHeaders = reinterpret_cast<PIMAGE_NT_HEADERS>(imageBase + dosHeader->e_lfanew);
+
+	std::span sections{ IMAGE_FIRST_SECTION(ntHeaders), ntHeaders->FileHeader.NumberOfSections };
+	for (const auto& section : sections)
+	{
+		if (std::string_view(reinterpret_cast<const char*>(section.Name)) == "il2cpp")
+			return { imageBase + section.VirtualAddress, section.Misc.VirtualSize };
+	}
+
+	return {};
+}

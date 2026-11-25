@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "Utils.h"
 #include "Zydis.h"
+#include "MouseSmoothing.h"
 
 #pragma comment(lib, "dbghelp.lib")
 #pragma comment(lib, "ntdll.lib")
@@ -34,7 +35,10 @@ namespace
 		int32_t Framerate;
 		bool PowerSave;
 		bool UseMobileUI;
+		bool DisableMouseSmoothing;
 	};
+	// must match unlockfps_nc IpcData (C# side: int Status, int Framerate, bool, bool, bool)
+	static_assert(offsetof(IPCData, DisableMouseSmoothing) == 10);
 
 }
 
@@ -379,6 +383,8 @@ DWORD __stdcall ThreadProc(LPVOID lpParameter)
 
 		targetFramerate = std::clamp(targetFramerate, 10, 1000);
 		*pFramerate = targetFramerate;
+
+		MouseSmoothing::Tick(ipcData->DisableMouseSmoothing);
 		Sleep(62);
 	}
 

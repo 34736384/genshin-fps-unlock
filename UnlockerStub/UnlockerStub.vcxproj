@@ -218,11 +218,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MouseSmoothing.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Zydis.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MouseSmoothing.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Zydis.h" />
   </ItemGroup>

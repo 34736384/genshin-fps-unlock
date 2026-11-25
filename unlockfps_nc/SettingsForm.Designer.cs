@@ -34,6 +34,7 @@
             TabGeneral = new TabPage();
             ComboPriority = new ComboBox();
             LabelPriority = new Label();
+            CBDisableMouseSmoothing = new CheckBox();
             CBPowerSave = new CheckBox();
             CBAutoClose = new CheckBox();
             CBStartMinimized = new CheckBox();
@@ -92,6 +93,7 @@
             // TabGeneral
             // 
             TabGeneral.Controls.Add(CBHdr);
+            TabGeneral.Controls.Add(CBDisableMouseSmoothing);
             TabGeneral.Controls.Add(ComboPriority);
             TabGeneral.Controls.Add(LabelPriority);
             TabGeneral.Controls.Add(CBPowerSave);
@@ -123,6 +125,17 @@
             LabelPriority.Size = new Size(122, 15);
             LabelPriority.TabIndex = 4;
             LabelPriority.Text = "Game Process Priority";
+            // 
+            // CBDisableMouseSmoothing
+            // 
+            CBDisableMouseSmoothing.AutoSize = true;
+            CBDisableMouseSmoothing.Location = new Point(6, 131);
+            CBDisableMouseSmoothing.Name = "CBDisableMouseSmoothing";
+            CBDisableMouseSmoothing.Size = new Size(167, 19);
+            CBDisableMouseSmoothing.TabIndex = 6;
+            CBDisableMouseSmoothing.Text = "Disable Mouse Smoothing";
+            ToolTipSettings.SetToolTip(CBDisableMouseSmoothing, "The game smooths mouse camera movement (~70ms lag, ~250ms trail).\r\nWhen checked, the camera follows the mouse 1:1.\r\nCan be toggled while the game is running. Controller is not affected.");
+            CBDisableMouseSmoothing.UseVisualStyleBackColor = true;
             // 
             // CBPowerSave
             // 
@@ -423,6 +436,7 @@
         private TabPage TabDlls;
         private ComboBox ComboPriority;
         private Label LabelPriority;
+        private CheckBox CBDisableMouseSmoothing;
         private CheckBox CBPowerSave;
         private CheckBox CBAutoClose;
         private CheckBox CBStartMinimized;

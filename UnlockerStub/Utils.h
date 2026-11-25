@@ -33,4 +33,6 @@ namespace Utils
 
 	uint8_t* AllocatePage(uint8_t* desiredAddress, size_t size, DWORD protect);
 
+	std::span<uint8_t> GetIl2CppSection();
+
 }

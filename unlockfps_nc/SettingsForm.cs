@@ -39,6 +39,7 @@ namespace unlockfps_nc
             CBPowerSave.DataBindings.Add("Checked", _config, "UsePowerSave", true, DataSourceUpdateMode.OnPropertyChanged);
             CBHdr.DataBindings.Add("Checked", _config, "UseHDR", true, DataSourceUpdateMode.OnPropertyChanged);
             ComboPriority.DataBindings.Add("SelectedIndex", _config, "Priority", true, DataSourceUpdateMode.OnPropertyChanged);
+            CBDisableMouseSmoothing.DataBindings.Add("Checked", _config, "DisableMouseSmoothing", true, DataSourceUpdateMode.OnPropertyChanged);
             
             // Launch Options
             CBPopup.DataBindings.Add("Checked", _config, "PopupWindow", true, DataSourceUpdateMode.OnPropertyChanged);

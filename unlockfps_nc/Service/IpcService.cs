@@ -25,6 +25,7 @@ namespace unlockfps_nc.Service
         public int Framerate;
         public bool PowerSave;
         public bool UseMobileUI;
+        public bool DisableMouseSmoothing;
     }
 
     public class IpcService(ConfigService configService) : IDisposable
@@ -119,6 +120,7 @@ namespace unlockfps_nc.Service
                 Framerate = configService.Config.FPSTarget,
                 PowerSave = configService.Config.UsePowerSave,
                 UseMobileUI = configService.Config.UseMobileUI,
+                DisableMouseSmoothing = configService.Config.DisableMouseSmoothing,
             };
 
             _sharedMemoryAccessor?.Write(0, ref ipcData);
