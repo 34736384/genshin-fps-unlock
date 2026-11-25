@@ -34,6 +34,9 @@
             TabGeneral = new TabPage();
             ComboPriority = new ComboBox();
             LabelPriority = new Label();
+            CBDisableMouseSmoothing = new CheckBox();
+            CBCustomVerticalSensitivity = new CheckBox();
+            InputVerticalSensitivity = new NumericUpDown();
             CBPowerSave = new CheckBox();
             CBAutoClose = new CheckBox();
             CBStartMinimized = new CheckBox();
@@ -63,6 +66,7 @@
             TabGeneral.SuspendLayout();
             TabLaunchOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)InputMonitorNum).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)InputVerticalSensitivity).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InputResY).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InputResX).BeginInit();
             TabDlls.SuspendLayout();
@@ -92,6 +96,9 @@
             // TabGeneral
             // 
             TabGeneral.Controls.Add(CBHdr);
+            TabGeneral.Controls.Add(CBDisableMouseSmoothing);
+            TabGeneral.Controls.Add(CBCustomVerticalSensitivity);
+            TabGeneral.Controls.Add(InputVerticalSensitivity);
             TabGeneral.Controls.Add(ComboPriority);
             TabGeneral.Controls.Add(LabelPriority);
             TabGeneral.Controls.Add(CBPowerSave);
@@ -123,6 +130,39 @@
             LabelPriority.Size = new Size(122, 15);
             LabelPriority.TabIndex = 4;
             LabelPriority.Text = "Game Process Priority";
+            // 
+            // CBDisableMouseSmoothing
+            // 
+            CBDisableMouseSmoothing.AutoSize = true;
+            CBDisableMouseSmoothing.Location = new Point(6, 131);
+            CBDisableMouseSmoothing.Name = "CBDisableMouseSmoothing";
+            CBDisableMouseSmoothing.Size = new Size(167, 19);
+            CBDisableMouseSmoothing.TabIndex = 6;
+            CBDisableMouseSmoothing.Text = "Disable Mouse Smoothing";
+            ToolTipSettings.SetToolTip(CBDisableMouseSmoothing, "The game smooths mouse camera movement (~70ms lag, ~250ms trail).\r\nWhen checked, the camera follows the mouse 1:1.\r\nCan be toggled while the game is running. Controller is not affected.");
+            CBDisableMouseSmoothing.UseVisualStyleBackColor = true;
+            // 
+            // CBCustomVerticalSensitivity
+            // 
+            CBCustomVerticalSensitivity.AutoSize = true;
+            CBCustomVerticalSensitivity.Location = new Point(6, 157);
+            CBCustomVerticalSensitivity.Name = "CBCustomVerticalSensitivity";
+            CBCustomVerticalSensitivity.Size = new Size(160, 19);
+            CBCustomVerticalSensitivity.TabIndex = 7;
+            CBCustomVerticalSensitivity.Text = "Vertical Sensitivity (%)";
+            ToolTipSettings.SetToolTip(CBCustomVerticalSensitivity, "The game turns the camera ~4.4x slower vertically than horizontally (about 23%).\r\nWhen checked, vertical mouse sensitivity is set to this percentage of horizontal.\r\n100% = same degrees per mouse movement on both axes.\r\nCan be changed while the game is running. Controller is not affected.");
+            CBCustomVerticalSensitivity.UseVisualStyleBackColor = true;
+            // 
+            // InputVerticalSensitivity
+            // 
+            InputVerticalSensitivity.Increment = new decimal(new int[] { 5, 0, 0, 0 });
+            InputVerticalSensitivity.Location = new Point(186, 155);
+            InputVerticalSensitivity.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            InputVerticalSensitivity.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+            InputVerticalSensitivity.Name = "InputVerticalSensitivity";
+            InputVerticalSensitivity.Size = new Size(60, 23);
+            InputVerticalSensitivity.TabIndex = 8;
+            InputVerticalSensitivity.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
             // CBPowerSave
             // 
@@ -406,6 +446,7 @@
             TabLaunchOptions.ResumeLayout(false);
             TabLaunchOptions.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)InputMonitorNum).EndInit();
+            ((System.ComponentModel.ISupportInitialize)InputVerticalSensitivity).EndInit();
             ((System.ComponentModel.ISupportInitialize)InputResY).EndInit();
             ((System.ComponentModel.ISupportInitialize)InputResX).EndInit();
             TabDlls.ResumeLayout(false);
@@ -423,6 +464,9 @@
         private TabPage TabDlls;
         private ComboBox ComboPriority;
         private Label LabelPriority;
+        private CheckBox CBDisableMouseSmoothing;
+        private CheckBox CBCustomVerticalSensitivity;
+        private NumericUpDown InputVerticalSensitivity;
         private CheckBox CBPowerSave;
         private CheckBox CBAutoClose;
         private CheckBox CBStartMinimized;

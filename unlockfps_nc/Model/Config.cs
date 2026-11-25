@@ -21,6 +21,9 @@ namespace unlockfps_nc.Model
         public bool SuspendLoad { get; set; }
         public bool UseMobileUI { get; set; }
         public bool UseHDR { get; set; }
+        public bool DisableMouseSmoothing { get; set; }
+        public bool CustomVerticalSensitivity { get; set; }
+        public int VerticalSensitivityPercent { get; set; } = 100;
 
         public int FPSTarget { get; set; } = 120;
         public int CustomResX { get; set; } = 1920;
