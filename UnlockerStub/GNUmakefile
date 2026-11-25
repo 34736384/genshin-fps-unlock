@@ -1,5 +1,5 @@
 CC = x86_64-w64-mingw32-g++
-SRCS = dllmain.cpp MouseSmoothing.cpp
+SRCS = dllmain.cpp MouseSmoothing.cpp VerticalSensitivity.cpp
 OBJS = $(SRCS:.cpp=.o)
 DLL = UnlockerStub.dll
 

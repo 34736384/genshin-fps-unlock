@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "Zydis.h"
 #include "MouseSmoothing.h"
+#include "VerticalSensitivity.h"
 
 #pragma comment(lib, "dbghelp.lib")
 #pragma comment(lib, "ntdll.lib")
@@ -36,9 +37,13 @@ namespace
 		bool PowerSave;
 		bool UseMobileUI;
 		bool DisableMouseSmoothing;
+		bool CustomVerticalSensitivity;
+		int32_t VerticalSensitivityPercent;
 	};
-	// must match unlockfps_nc IpcData (C# side: int Status, int Framerate, bool, bool, bool)
+	// must match unlockfps_nc IpcData (C# side: int Status, int Framerate, bool, bool, bool, bool, int)
 	static_assert(offsetof(IPCData, DisableMouseSmoothing) == 10);
+	static_assert(offsetof(IPCData, CustomVerticalSensitivity) == 11);
+	static_assert(offsetof(IPCData, VerticalSensitivityPercent) == 12);
 
 }
 
@@ -385,6 +390,7 @@ DWORD __stdcall ThreadProc(LPVOID lpParameter)
 		*pFramerate = targetFramerate;
 
 		MouseSmoothing::Tick(ipcData->DisableMouseSmoothing);
+		VerticalSensitivity::Tick(ipcData->CustomVerticalSensitivity, ipcData->VerticalSensitivityPercent);
 		Sleep(62);
 	}
 

@@ -26,6 +26,8 @@ namespace unlockfps_nc.Service
         public bool PowerSave;
         public bool UseMobileUI;
         public bool DisableMouseSmoothing;
+        public bool CustomVerticalSensitivity;
+        public int VerticalSensitivityPercent;
     }
 
     public class IpcService(ConfigService configService) : IDisposable
@@ -121,6 +123,8 @@ namespace unlockfps_nc.Service
                 PowerSave = configService.Config.UsePowerSave,
                 UseMobileUI = configService.Config.UseMobileUI,
                 DisableMouseSmoothing = configService.Config.DisableMouseSmoothing,
+                CustomVerticalSensitivity = configService.Config.CustomVerticalSensitivity,
+                VerticalSensitivityPercent = configService.Config.VerticalSensitivityPercent,
             };
 
             _sharedMemoryAccessor?.Write(0, ref ipcData);
